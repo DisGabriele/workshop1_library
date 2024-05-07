@@ -54,16 +54,6 @@ public class GenreService implements GenreRepository {
         return genre;
     }
 
-    @Override
-    public Genre getByName(String name) throws NotFoundException {
-        try {
-            return entityManager.createQuery("SELECT g FROM Genre g WHERE g.name = :name", Genre.class)
-                    .setParameter("name", name)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundException("genre not found");
-        }
-    }
 
     @Override
     public Genre save(Genre genre) {
@@ -78,7 +68,7 @@ public class GenreService implements GenreRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws NotFoundException{
         Genre genre = getById(id);
         entityManager.remove(genre);
     }

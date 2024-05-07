@@ -1,8 +1,8 @@
 package it.paa.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.smallrye.common.constraint.NotNull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 
@@ -14,16 +14,56 @@ public class Author {
     private Long id;
 
     @Column(name = "name")
-    @NotNull
+    @NotBlank(message = "name cannot be empty")
     private String name;
 
     @Column(name = "surname")
+    @NotBlank(message = "surname cannot be empty")
     private String surname;
 
 
     @Column(name = "birth_date")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Past(message = "birth date must be in the past")
     private LocalDate birthDate;
 
+    public Author(){}
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public boolean oldEquals(Author author){
+        return
+                this.name.equals(author.getName()) &&
+                        this.surname.equals(author.getSurname()) &&
+                        this.birthDate.equals(author.getBirthDate());
+    }
 }

@@ -1,13 +1,12 @@
 package it.paa.resource;
 
-import it.paa.model.dto.GenreDTO;
-import it.paa.model.entity.Genre;
+import it.paa.model.dto.AuthorDTO;
+import it.paa.model.entity.Author;
 import it.paa.model.mapper.Mapper;
-import it.paa.service.GenreService;
+import it.paa.service.AuthorService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
-
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,20 +16,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Path("/genres")
-public class GenreResource {
+@Path("/authors")
+public class AuthorResource {
 
     @Inject
-    GenreService genreService;
+    AuthorService authorService;
 
     @Inject
     Validator validator;
 
     @GET
-    public Response getAll(@QueryParam("name") String name, @QueryParam("description") String description) {
+    public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
         try {
-            List<Genre> genres = genreService.getAll(name, description);
-            return Response.ok(genres)
+            List<Author> authors = authorService.getAll(name, surname);
+            return Response.ok(authors)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (Exception e) {
@@ -45,8 +44,8 @@ public class GenreResource {
     @Path("/id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
-            Genre genre = genreService.getById(id);
-            return Response.ok(genre)
+            Author author = authorService.getById(id);
+            return Response.ok(author)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (NotFoundException e) {
@@ -60,10 +59,10 @@ public class GenreResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(GenreDTO genreDTO) {
-        Genre genre = Mapper.GenreMapper(genreDTO);
+    public Response create(AuthorDTO authorDTO) {
+        Author author = Mapper.AuthorMapper(authorDTO);
 
-        Set<ConstraintViolation<Genre>> violations = validator.validate(genre);
+        Set<ConstraintViolation<Author>> violations = validator.validate(author);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
@@ -77,21 +76,20 @@ public class GenreResource {
         }
 
         return Response.status(Response.Status.CREATED)
-                .entity(genreService.save(genre))
+                .entity(authorService.save(author))
                 .build();
     }
 
     @PUT
     @Path("/id/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response update(@PathParam("id") Long id, GenreDTO genreDTO) {
+    public Response update(@PathParam("id") Long id, AuthorDTO authorDTO) {
 
-        Genre old = genreService.getById(id);
-        Genre genre = Mapper.GenreMapper(genreDTO);
-        genre.setId(id);
+        Author old = authorService.getById(id);
+        Author author = Mapper.AuthorMapper(authorDTO);
+        author.setId(id);
 
-        Set<ConstraintViolation<Genre>> violations = validator.validate(genre);
+        Set<ConstraintViolation<Author>> violations = validator.validate(author);
 
         if (!violations.isEmpty()) {
 
@@ -105,11 +103,12 @@ public class GenreResource {
                     .build();
         }
 
-        if (!genre.oldEquals(old)) {
+        if(!author.oldEquals(old)){
             return Response.ok(
-                    genreService.update(genre)
+                    authorService.update(author)
             ).build();
-        } else {
+        }
+        else{
             return Response.status(Response.Status.NOT_MODIFIED)
                     .type(MediaType.APPLICATION_JSON)
                     .entity(old)
@@ -119,10 +118,9 @@ public class GenreResource {
 
     @DELETE
     @Path("/id/{id}")
-    @Transactional
     public Response delete(@PathParam("id") Long id) {
-        try {
-            genreService.delete(id);
+        try{
+            authorService.delete(id);
             return Response.ok().build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
