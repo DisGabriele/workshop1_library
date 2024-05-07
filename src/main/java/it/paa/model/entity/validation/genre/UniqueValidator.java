@@ -1,4 +1,4 @@
-package it.paa.model.entity.validation;
+package it.paa.model.entity.validation.genre;
 
 import it.paa.model.entity.Genre;
 import jakarta.inject.Inject;
@@ -6,13 +6,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class UniqueValidatorGenre implements ConstraintValidator<UniqueConstraintGenre, Genre> {
+public class UniqueValidator implements ConstraintValidator<UniqueConstraint, Genre> {
 
     @Inject
     EntityManager entityManager;
 
     @Override
-    public void initialize(UniqueConstraintGenre constraintAnnotation) {
+    public void initialize(UniqueConstraint constraintAnnotation) {
     }
 
     @Override

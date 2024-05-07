@@ -1,6 +1,9 @@
 package it.paa.model.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class GenreDTO {
+    @NotBlank(message = "name cannot be empty")
     private String name;
     private String description;
 

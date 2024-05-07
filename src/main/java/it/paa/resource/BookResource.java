@@ -1,13 +1,12 @@
 package it.paa.resource;
 
-import it.paa.model.dto.GenreDTO;
-import it.paa.model.entity.Genre;
+import it.paa.model.dto.BookDTO;
+import it.paa.model.entity.Book;
 import it.paa.model.mapper.Mapper;
-import it.paa.service.GenreService;
+import it.paa.service.BookService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
-
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,20 +16,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Path("/genres")
-public class GenreResource {
+@Path("/books")
+public class BookResource {
 
     @Inject
-    GenreService genreService;
+    BookService bookService;
 
     @Inject
     Validator validator;
 
     @GET
-    public Response getAll(@QueryParam("name") String name, @QueryParam("description") String description) {
+    public Response getAll(@QueryParam("title") String title, @QueryParam("start date") Integer startDate, @QueryParam("end date") Integer endDate) {
         try {
-            List<Genre> genres = genreService.getAll(name, description);
-            return Response.ok(genres)
+            List<Book> books = bookService.getAll(title, startDate, endDate);
+            return Response.ok(books)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (Exception e) {
@@ -45,8 +44,8 @@ public class GenreResource {
     @Path("/id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
-            Genre genre = genreService.getById(id);
-            return Response.ok(genre)
+            Book book = bookService.getById(id);
+            return Response.ok(book)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (NotFoundException e) {
@@ -60,9 +59,9 @@ public class GenreResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(GenreDTO genreDTO) {
+    public Response create(BookDTO bookDTO) {
 
-        Set<ConstraintViolation<GenreDTO>> violations = validator.validate(genreDTO);
+        Set<ConstraintViolation<BookDTO>> violations = validator.validate(bookDTO);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
@@ -75,10 +74,10 @@ public class GenreResource {
                     .build();
         }
 
-        Genre genre = Mapper.GenreMapper(genreDTO);
+        Book book = Mapper.BookMapper(bookDTO);
 
         return Response.status(Response.Status.CREATED)
-                .entity(genreService.save(genre))
+                .entity(bookService.save(book))
                 .build();
     }
 
@@ -86,12 +85,11 @@ public class GenreResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response update(@PathParam("id") Long id, GenreDTO genreDTO) {
+    public Response update(@PathParam("id") Long id, BookDTO bookDTO) {
 
-        Set<ConstraintViolation<GenreDTO>> violations = validator.validate(genreDTO);
+        Set<ConstraintViolation<BookDTO>> violations = validator.validate(bookDTO);
 
         if (!violations.isEmpty()) {
-
             String errorMessage = violations.stream()
                     .map(violation -> String.format("%s", violation.getMessage()))
                     .collect(Collectors.joining("\n"));
@@ -102,13 +100,13 @@ public class GenreResource {
                     .build();
         }
 
-        Genre old = genreService.getById(id);
-        Genre genre = Mapper.GenreMapper(genreDTO);
-        genre.setId(id);
+        Book old = bookService.getById(id);
+        Book book = Mapper.BookMapper(bookDTO);
+        book.setId(old.getId());
 
-        if (!genre.oldEquals(old)) {
+        if (!book.oldEquals(old)) {
             return Response.ok(
-                    genreService.update(genre)
+                    bookService.update(book)
             ).build();
         } else {
             return Response.status(Response.Status.NOT_MODIFIED)
@@ -123,7 +121,7 @@ public class GenreResource {
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {
-            genreService.delete(id);
+            bookService.delete(id);
             return Response.ok().build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)

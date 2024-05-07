@@ -60,9 +60,7 @@ public class AuthorResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(AuthorDTO authorDTO) {
-        Author author = Mapper.AuthorMapper(authorDTO);
-
-        Set<ConstraintViolation<Author>> violations = validator.validate(author);
+        Set<ConstraintViolation<AuthorDTO>> violations = validator.validate(authorDTO);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
@@ -74,6 +72,8 @@ public class AuthorResource {
                     .entity(errorMessage)
                     .build();
         }
+
+        Author author = Mapper.AuthorMapper(authorDTO);
 
         return Response.status(Response.Status.CREATED)
                 .entity(authorService.save(author))
@@ -85,11 +85,7 @@ public class AuthorResource {
     @Transactional
     public Response update(@PathParam("id") Long id, AuthorDTO authorDTO) {
 
-        Author old = authorService.getById(id);
-        Author author = Mapper.AuthorMapper(authorDTO);
-        author.setId(id);
-
-        Set<ConstraintViolation<Author>> violations = validator.validate(author);
+        Set<ConstraintViolation<AuthorDTO>> violations = validator.validate(authorDTO);
 
         if (!violations.isEmpty()) {
 
@@ -102,6 +98,10 @@ public class AuthorResource {
                     .entity(errorMessage)
                     .build();
         }
+
+        Author old = authorService.getById(id);
+        Author author = Mapper.AuthorMapper(authorDTO);
+        author.setId(id);
 
         if(!author.oldEquals(old)){
             return Response.ok(

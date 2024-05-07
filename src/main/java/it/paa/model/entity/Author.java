@@ -14,16 +14,13 @@ public class Author {
     private Long id;
 
     @Column(name = "name")
-    @NotBlank(message = "name cannot be empty")
     private String name;
 
     @Column(name = "surname")
-    @NotBlank(message = "surname cannot be empty")
     private String surname;
 
 
     @Column(name = "birth_date")
-    @Past(message = "birth date must be in the past")
     private LocalDate birthDate;
 
     public Author(){}

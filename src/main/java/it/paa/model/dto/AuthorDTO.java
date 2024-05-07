@@ -7,8 +7,13 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 
 public class AuthorDTO {
+    @NotBlank(message = "name cannot be empty")
     private String name;
+
+    @NotBlank(message = "surname cannot be empty")
     private String surname;
+
+    @Past(message = "birth date must be in the past")
     private LocalDate birthDate;
 
     public AuthorDTO() {}

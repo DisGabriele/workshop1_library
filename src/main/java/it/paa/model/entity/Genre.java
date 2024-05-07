@@ -1,6 +1,5 @@
 package it.paa.model.entity;
 
-import it.paa.model.entity.validation.UniqueConstraintGenre;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -13,7 +12,6 @@ public class Genre {
     private Long id;
 
     @Column(name = "name", unique = true, nullable = false)
-    @NotBlank(message = "name cannot be empty")
     private String name;
 
     @Column(name = "description", columnDefinition = "text")
