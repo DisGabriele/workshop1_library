@@ -75,7 +75,7 @@ public class GenreResource {
                     .build();
         }
 
-        Genre genre = Mapper.GenreMapper(genreDTO);
+        Genre genre = Mapper.genreMapper(genreDTO);
 
         return Response.status(Response.Status.CREATED)
                 .entity(genreService.save(genre))
@@ -103,7 +103,7 @@ public class GenreResource {
         }
 
         Genre old = genreService.getById(id);
-        Genre genre = Mapper.GenreMapper(genreDTO);
+        Genre genre = Mapper.genreMapper(genreDTO);
         genre.setId(id);
 
         if (!genre.oldEquals(old)) {

@@ -1,36 +1,80 @@
 package it.paa.resource;
 
 import it.paa.model.dto.BookDTO;
-import it.paa.model.entity.Book;
+import it.paa.model.dto.ReviewDTO;
+import it.paa.model.entity.Review;
 import it.paa.model.mapper.Mapper;
-import it.paa.service.BookService;
+import it.paa.service.ReviewService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Path("/books")
-public class BookResource {
+@Path("/reviews")
+public class ReviewResource {
 
     @Inject
-    BookService bookService;
+    ReviewService reviewService;
 
     @Inject
     Validator validator;
 
     @GET
-    public Response getAll(@QueryParam("title") String title, @QueryParam("start date") Integer startDate, @QueryParam("end date") Integer endDate) {
+    public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
         try {
-            List<Book> books = bookService.getAll(title, startDate, endDate);
-            return Response.ok(books)
+            LocalDate startDate = null;
+            LocalDate endDate = null;
+
+            if (startDateString != null) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    startDate = LocalDate.parse(startDateString, formatter);
+                } catch (DateTimeParseException e) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                        startDate = LocalDate.parse(startDateString, formatter);
+
+                    } catch (DateTimeParseException ex) {
+                        return Response.status(Response.Status.BAD_REQUEST)
+                                .type(MediaType.TEXT_PLAIN)
+                                .entity("Invalid date format")
+                                .build();
+                    }
+                }
+            }
+
+            if (endDateString != null) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    endDate = LocalDate.parse(endDateString, formatter);
+                } catch (DateTimeParseException e) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                        endDate = LocalDate.parse(endDateString, formatter);
+                    } catch (DateTimeParseException ex) {
+                        return Response.status(Response.Status.BAD_REQUEST)
+                                .type(MediaType.TEXT_PLAIN)
+                                .entity("Invalid date format")
+                                .build();
+                    }
+                }
+            }
+
+            List<Review> review = reviewService.getAll(score, startDate, endDate);
+            return Response.ok(review)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (IllegalArgumentException e) {
@@ -50,8 +94,8 @@ public class BookResource {
     @Path("/id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
-            Book book = bookService.getById(id);
-            return Response.ok(book)
+            Review review = reviewService.getById(id);
+            return Response.ok(review)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (NotFoundException e) {
@@ -65,9 +109,8 @@ public class BookResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(BookDTO bookDTO) {
-
-        Set<ConstraintViolation<BookDTO>> violations = validator.validate(bookDTO);
+    public Response create(ReviewDTO reviewDTO) {
+        Set<ConstraintViolation<ReviewDTO>> violations = validator.validate(reviewDTO);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
@@ -80,21 +123,20 @@ public class BookResource {
                     .build();
         }
 
-        Book book = Mapper.bookMapper(bookDTO);
+        Review review = Mapper.reviewMapper(reviewDTO);
 
         return Response.status(Response.Status.CREATED)
                 .type(MediaType.APPLICATION_JSON)
-                .entity(bookService.save(book))
+                .entity(reviewService.save(review))
                 .build();
     }
 
     @PUT
     @Path("/id/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
-    public Response update(@PathParam("id") Long id, BookDTO bookDTO) {
-
-        Set<ConstraintViolation<BookDTO>> violations = validator.validate(bookDTO);
+    public Response update(@PathParam("id") Long id, ReviewDTO reviewDTO) {
+        Set<ConstraintViolation<ReviewDTO>> violations = validator.validate(reviewDTO);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
@@ -107,13 +149,13 @@ public class BookResource {
                     .build();
         }
 
-        Book old = bookService.getById(id);
-        Book book = Mapper.bookMapper(bookDTO);
-        book.setId(old.getId());
+        Review old = reviewService.getById(id);
+        Review review = Mapper.reviewMapper(reviewDTO);
+        review.setId(old.getId());
 
-        if (!book.oldEquals(old)) {
+        if (!review.oldEquals(old)) {
             return Response.ok(
-                    bookService.update(book)
+                    reviewService.update(review)
             ).build();
         } else {
             return Response.status(Response.Status.NOT_MODIFIED)
@@ -128,7 +170,7 @@ public class BookResource {
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {
-            bookService.delete(id);
+            reviewService.delete(id);
             return Response.ok().build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)

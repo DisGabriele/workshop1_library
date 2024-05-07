@@ -73,7 +73,7 @@ public class AuthorResource {
                     .build();
         }
 
-        Author author = Mapper.AuthorMapper(authorDTO);
+        Author author = Mapper.authorMapper(authorDTO);
 
         return Response.status(Response.Status.CREATED)
                 .entity(authorService.save(author))
@@ -100,7 +100,7 @@ public class AuthorResource {
         }
 
         Author old = authorService.getById(id);
-        Author author = Mapper.AuthorMapper(authorDTO);
+        Author author = Mapper.authorMapper(authorDTO);
         author.setId(id);
 
         if(!author.oldEquals(old)){

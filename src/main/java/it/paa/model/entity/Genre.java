@@ -1,7 +1,6 @@
 package it.paa.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "genres")
@@ -16,6 +15,8 @@ public class Genre {
 
     @Column(name = "description", columnDefinition = "text")
     private String description;
+
+    public Genre(){}
 
     public Long getId() {
         return id;

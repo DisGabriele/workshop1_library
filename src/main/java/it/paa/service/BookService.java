@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.NoContentException;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class BookService implements BookRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Book> getAll(String title, Integer startDate, Integer endDate) throws Exception {
+    public List<Book> getAll(String title, Integer startDate, Integer endDate) throws IllegalArgumentException, NoContentException {
         String query = "SELECT b FROM Book b";
         List<Book> books;
 
@@ -33,7 +34,7 @@ public class BookService implements BookRepository {
                     .getResultList();
         } else if (startDate != null || endDate != null) {
             if (startDate == null || endDate == null) {
-                throw new Exception("Start date and end date cannot must be both empty or filled");
+                throw new IllegalArgumentException("Start date and end date cannot must be both empty or filled");
             } else {
                 books = entityManager.createQuery(query.concat(" WHERE b.publishingDate BETWEEN :startDate AND :endDate"), Book.class)
                         .setParameter("startDate", startDate)
@@ -46,7 +47,7 @@ public class BookService implements BookRepository {
         }
 
         if (books.isEmpty())
-            throw new Exception("no books found");
+            throw new NoContentException("no books found");
 
         return books;
     }
