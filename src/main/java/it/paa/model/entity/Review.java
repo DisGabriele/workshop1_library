@@ -1,5 +1,6 @@
 package it.paa.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PastOrPresent;
 
@@ -20,6 +21,11 @@ public class Review {
 
     @Column(name = "date")
     private LocalDate date;
+
+    @ManyToOne
+    @JoinColumn(name = "book", referencedColumnName = "id")
+    @JsonManagedReference
+    private Book book;
 
     public Review(){}
 
@@ -53,6 +59,14 @@ public class Review {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 
     public boolean oldEquals(Review review) {

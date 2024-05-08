@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class ReviewDTO {
 
-    @NotBlank
+    @NotBlank(message = "text must not be empty")
     private String text;
 
     @Min(value = 1,message = "score must be higher than 1")

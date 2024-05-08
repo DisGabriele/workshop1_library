@@ -1,11 +1,10 @@
 package it.paa.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "books")
@@ -23,7 +22,22 @@ public class Book {
     @Column(name = "page_number", nullable = false)
     private Integer pageNumber;
 
-    public Book(){}
+    @ManyToOne
+    @JoinColumn(name = "genre", referencedColumnName = "id")
+    @JsonManagedReference
+    private Genre genre;
+
+    @ManyToOne
+    @JoinColumn(name = "author", referencedColumnName = "id")
+    @JsonManagedReference
+    private Author author;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Review> reviews;
+
+    public Book() {
+    }
 
     public Long getId() {
         return id;
@@ -57,10 +71,40 @@ public class Book {
         this.pageNumber = pageNumber;
     }
 
-    public boolean oldEquals(Book book){
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+    }
+
+    public boolean oldEquals(Book book) {
         return
                 this.title.equals(book.getTitle()) &&
                         this.publishingDate == book.getPublishingDate() &&
-                        this.pageNumber == book.getPageNumber();
+                        this.pageNumber == book.getPageNumber() &&
+                        this.author.equals(book.getAuthor()) &&
+                        this.genre.equals(book.getGenre());
     }
 }

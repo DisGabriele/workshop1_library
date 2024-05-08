@@ -64,7 +64,7 @@ public class AuthorResource {
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)
@@ -88,9 +88,8 @@ public class AuthorResource {
         Set<ConstraintViolation<AuthorDTO>> violations = validator.validate(authorDTO);
 
         if (!violations.isEmpty()) {
-
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)

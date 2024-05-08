@@ -66,7 +66,7 @@ public class GenreResource {
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)
@@ -76,6 +76,8 @@ public class GenreResource {
         }
 
         Genre genre = Mapper.genreMapper(genreDTO);
+
+
 
         return Response.status(Response.Status.CREATED)
                 .entity(genreService.save(genre))
@@ -91,9 +93,8 @@ public class GenreResource {
         Set<ConstraintViolation<GenreDTO>> violations = validator.validate(genreDTO);
 
         if (!violations.isEmpty()) {
-
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)

@@ -1,9 +1,13 @@
 package it.paa.resource;
 
 import it.paa.model.dto.BookDTO;
+import it.paa.model.entity.Author;
 import it.paa.model.entity.Book;
+import it.paa.model.entity.Genre;
 import it.paa.model.mapper.Mapper;
+import it.paa.service.AuthorService;
 import it.paa.service.BookService;
+import it.paa.service.GenreService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -22,6 +26,12 @@ public class BookResource {
 
     @Inject
     BookService bookService;
+
+    @Inject
+    GenreService genreService;
+
+    @Inject
+    AuthorService authorService;
 
     @Inject
     Validator validator;
@@ -71,7 +81,7 @@ public class BookResource {
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)
@@ -80,7 +90,29 @@ public class BookResource {
                     .build();
         }
 
+        Author author;
+        try {
+            author = authorService.getById(bookDTO.getAuthorId());
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
+        Genre genre;
+        try {
+            genre = genreService.getById(bookDTO.getGenreId());
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
         Book book = Mapper.bookMapper(bookDTO);
+        book.setAuthor(author);
+        book.setGenre(genre);
 
         return Response.status(Response.Status.CREATED)
                 .type(MediaType.APPLICATION_JSON)
@@ -98,7 +130,7 @@ public class BookResource {
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)
@@ -110,6 +142,29 @@ public class BookResource {
         Book old = bookService.getById(id);
         Book book = Mapper.bookMapper(bookDTO);
         book.setId(old.getId());
+
+        Author author;
+        try {
+            author = authorService.getById(bookDTO.getAuthorId());
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
+        Genre genre;
+        try {
+            genre = genreService.getById(bookDTO.getGenreId());
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
+        book.setAuthor(author);
+        book.setGenre(genre);
 
         if (!book.oldEquals(old)) {
             return Response.ok(

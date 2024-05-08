@@ -40,9 +40,9 @@ public class Mapper {
 
     public static Review reviewMapper(ReviewDTO reviewDTO){
         Review review = new Review();
-        reviewDTO.setText(reviewDTO.getText());
-        reviewDTO.setScore(reviewDTO.getScore());
-        reviewDTO.setDate(reviewDTO.getDate());
+        review.setText(reviewDTO.getText());
+        review.setScore(reviewDTO.getScore());
+        review.setDate(reviewDTO.getDate());
 
         return review;
     }

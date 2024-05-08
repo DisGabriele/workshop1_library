@@ -1,6 +1,10 @@
 package it.paa.model.dto;
 
+import it.paa.model.entity.Genre;
 import it.paa.model.entity.validation.book.PastYearCostraint;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.*;
 
 public class BookDTO {
@@ -15,6 +19,12 @@ public class BookDTO {
     @Min(value = 1, message = "page number must be at least 1")
     @Max(value = 5000, message = "page number must be at most 5000")
     private Integer pageNumber;
+
+    @NotNull(message = "genre must not be null")
+    private long genreId;
+
+    @NotNull(message = "author must not be null")
+    private long authorId;
 
     public BookDTO(){}
 
@@ -40,5 +50,21 @@ public class BookDTO {
 
     public void setPageNumber(Integer pageNumber) {
         this.pageNumber = pageNumber;
+    }
+
+    public long getGenreId() {
+        return genreId;
+    }
+
+    public void setGenreId(long genreId) {
+        this.genreId = genreId;
+    }
+
+    public long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(long authorId) {
+        this.authorId = authorId;
     }
 }

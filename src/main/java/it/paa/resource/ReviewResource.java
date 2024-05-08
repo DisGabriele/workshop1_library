@@ -1,14 +1,14 @@
 package it.paa.resource;
 
-import it.paa.model.dto.BookDTO;
 import it.paa.model.dto.ReviewDTO;
+import it.paa.model.entity.Book;
 import it.paa.model.entity.Review;
 import it.paa.model.mapper.Mapper;
+import it.paa.service.BookService;
 import it.paa.service.ReviewService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Path("/reviews")
@@ -28,6 +27,9 @@ public class ReviewResource {
 
     @Inject
     ReviewService reviewService;
+
+    @Inject
+    BookService bookService;
 
     @Inject
     Validator validator;
@@ -107,14 +109,15 @@ public class ReviewResource {
     }
 
     @POST
+    @Path("/book_id/{book_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(ReviewDTO reviewDTO) {
+    public Response create(@PathParam("book_id") Long bookId,ReviewDTO reviewDTO) {
         Set<ConstraintViolation<ReviewDTO>> violations = validator.validate(reviewDTO);
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)
@@ -123,7 +126,19 @@ public class ReviewResource {
                     .build();
         }
 
+        Book book;
+        try{
+            book = bookService.getById(bookId);
+        }
+        catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
         Review review = Mapper.reviewMapper(reviewDTO);
+        review.setBook(book);
 
         return Response.status(Response.Status.CREATED)
                 .type(MediaType.APPLICATION_JSON)
@@ -140,7 +155,7 @@ public class ReviewResource {
 
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
-                    .map(violation -> String.format("%s", violation.getMessage()))
+                    .map(ConstraintViolation::getMessage)
                     .collect(Collectors.joining("\n"));
 
             return Response.status(Response.Status.BAD_REQUEST)

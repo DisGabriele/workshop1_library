@@ -1,6 +1,11 @@
 package it.paa.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "genres")
@@ -15,6 +20,10 @@ public class Genre {
 
     @Column(name = "description", columnDefinition = "text")
     private String description;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Book> books;
 
     public Genre(){}
 
@@ -42,9 +51,34 @@ public class Genre {
         this.description = description;
     }
 
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public void addBook(Book book){
+        this.books.add(book);
+    }
+
     public boolean oldEquals(Genre genre) {
         return
                 this.name.equals(genre.getName()) &&
                         this.description.equals(genre.getDescription());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Genre genre = (Genre) o;
+        return Objects.equals(id, genre.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
