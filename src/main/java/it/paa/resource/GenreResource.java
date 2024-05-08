@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -17,17 +18,12 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Path("/genres")
 public class GenreResource {
 
     @Inject
     GenreService genreService;
-
-    @Inject
-    Validator validator;
 
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("description") String description) {
@@ -66,12 +62,12 @@ public class GenreResource {
         try {
             List<GenreReviewDTO> genreReviewDTOList = new ArrayList<>();
 
-            genreService.getAll("","").forEach(genre ->{
-                        GenreReviewDTO genreReviewDTO = new GenreReviewDTO();
-                        genreReviewDTO.setGenre(genre);
-                        genreReviewDTO.setAverageReview(genre.getAverageRating());
-                        genreReviewDTOList.add(genreReviewDTO);
-                    });
+            genreService.getAll("", "").forEach(genre -> {
+                GenreReviewDTO genreReviewDTO = new GenreReviewDTO();
+                genreReviewDTO.setGenre(genre);
+                genreReviewDTO.setAverageReview(genre.getAverageRating());
+                genreReviewDTOList.add(genreReviewDTO);
+            });
 
             return Response.ok(genreReviewDTOList)
                     .type(MediaType.APPLICATION_JSON)
@@ -81,8 +77,7 @@ public class GenreResource {
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
                     .build();
-        }
-        catch (NoContentException e){
+        } catch (NoContentException e) {
             return Response.noContent()
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
@@ -93,23 +88,9 @@ public class GenreResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(GenreDTO genreDTO) {
-
-        Set<ConstraintViolation<GenreDTO>> violations = validator.validate(genreDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
+    public Response create(@Valid GenreDTO genreDTO) {
 
         Genre genre = Mapper.genreMapper(genreDTO);
-
 
 
         return Response.status(Response.Status.CREATED)
@@ -121,20 +102,7 @@ public class GenreResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response update(@PathParam("id") Long id, GenreDTO genreDTO) {
-
-        Set<ConstraintViolation<GenreDTO>> violations = validator.validate(genreDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
+    public Response update(@PathParam("id") Long id, @Valid GenreDTO genreDTO) {
 
         Genre old = genreService.getById(id);
         Genre genre = Mapper.genreMapper(genreDTO);

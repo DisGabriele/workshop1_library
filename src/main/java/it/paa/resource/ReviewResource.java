@@ -9,6 +9,7 @@ import it.paa.service.ReviewService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -30,9 +31,6 @@ public class ReviewResource {
 
     @Inject
     BookService bookService;
-
-    @Inject
-    Validator validator;
 
     @GET
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
@@ -113,25 +111,11 @@ public class ReviewResource {
     @Path("/book_id/{book_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(@PathParam("book_id") Long bookId,ReviewDTO reviewDTO) {
-        Set<ConstraintViolation<ReviewDTO>> violations = validator.validate(reviewDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
-
+    public Response create(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
         Book book;
-        try{
+        try {
             book = bookService.getById(bookId);
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
@@ -151,20 +135,7 @@ public class ReviewResource {
     @Path("/id/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
-    public Response update(@PathParam("id") Long id, ReviewDTO reviewDTO) {
-        Set<ConstraintViolation<ReviewDTO>> violations = validator.validate(reviewDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
-
+    public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
         Review old = reviewService.getById(id);
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setId(old.getId());

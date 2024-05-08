@@ -11,6 +11,7 @@ import it.paa.service.GenreService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -32,9 +33,6 @@ public class BookResource {
 
     @Inject
     AuthorService authorService;
-
-    @Inject
-    Validator validator;
 
     @GET
     public Response getAll(@QueryParam("title") String title, @QueryParam("start date") Integer startDate, @QueryParam("end date") Integer endDate) {
@@ -75,21 +73,7 @@ public class BookResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(BookDTO bookDTO) {
-
-        Set<ConstraintViolation<BookDTO>> violations = validator.validate(bookDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
-
+    public Response create(@Valid BookDTO bookDTO) {
         Author author;
         try {
             author = authorService.getById(bookDTO.getAuthorId());
@@ -124,21 +108,7 @@ public class BookResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response update(@PathParam("id") Long id, BookDTO bookDTO) {
-
-        Set<ConstraintViolation<BookDTO>> violations = validator.validate(bookDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
-
+    public Response update(@PathParam("id") Long id, @Valid BookDTO bookDTO) {
         Book old = bookService.getById(id);
         Book book = Mapper.bookMapper(bookDTO);
         book.setId(old.getId());

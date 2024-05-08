@@ -9,6 +9,7 @@ import it.paa.service.AuthorService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -24,9 +25,6 @@ public class AuthorResource {
 
     @Inject
     AuthorService authorService;
-
-    @Inject
-    Validator validator;
 
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
@@ -84,20 +82,7 @@ public class AuthorResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(AuthorDTO authorDTO) {
-        Set<ConstraintViolation<AuthorDTO>> violations = validator.validate(authorDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
-
+    public Response create(@Valid AuthorDTO authorDTO) {
         Author author = Mapper.authorMapper(authorDTO);
 
         return Response.status(Response.Status.CREATED)
@@ -108,31 +93,16 @@ public class AuthorResource {
     @PUT
     @Path("/id/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, AuthorDTO authorDTO) {
-
-        Set<ConstraintViolation<AuthorDTO>> violations = validator.validate(authorDTO);
-
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining("\n"));
-
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(errorMessage)
-                    .build();
-        }
-
+    public Response update(@PathParam("id") Long id, @Valid AuthorDTO authorDTO) {
         Author old = authorService.getById(id);
         Author author = Mapper.authorMapper(authorDTO);
         author.setId(id);
 
-        if(!author.oldEquals(old)){
+        if (!author.oldEquals(old)) {
             return Response.ok(
                     authorService.update(author)
             ).build();
-        }
-        else{
+        } else {
             return Response.status(Response.Status.NOT_MODIFIED)
                     .type(MediaType.APPLICATION_JSON)
                     .entity(old)
@@ -143,7 +113,7 @@ public class AuthorResource {
     @DELETE
     @Path("/id/{id}")
     public Response delete(@PathParam("id") Long id) {
-        try{
+        try {
             authorService.delete(id);
             return Response.ok().build();
         } catch (NotFoundException e) {

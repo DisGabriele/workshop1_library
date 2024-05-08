@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.OptionalDouble;
 
 @Entity
 @Table(name = "authors")
@@ -25,6 +24,9 @@ public class Author {
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    @Column(name = "nationality")
+    private String nationality;
 
     @JsonBackReference
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -66,6 +68,14 @@ public class Author {
 
     public List<Book> getBooks() {
         return books;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
     }
 
     public void setBooks(List<Book> books) {

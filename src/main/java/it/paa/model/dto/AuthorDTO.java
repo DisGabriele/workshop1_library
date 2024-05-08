@@ -14,6 +14,9 @@ public class AuthorDTO {
     @NotBlank(message = "surname cannot be empty")
     private String surname;
 
+    @NotBlank(message = "nationality cannot be empty")
+    private String nationality;
+
     @PastOrPresent(message = "birth date must not be in the future")
     private LocalDate birthDate;
 
@@ -33,6 +36,14 @@ public class AuthorDTO {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
     }
 
     public LocalDate getBirthDate() {
