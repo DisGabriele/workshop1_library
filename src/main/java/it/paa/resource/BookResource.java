@@ -10,17 +10,13 @@ import it.paa.service.BookService;
 import it.paa.service.GenreService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Path("/books")
 public class BookResource {

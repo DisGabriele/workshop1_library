@@ -1,8 +1,6 @@
 package it.paa.model.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;

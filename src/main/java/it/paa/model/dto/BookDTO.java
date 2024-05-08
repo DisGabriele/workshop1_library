@@ -1,10 +1,6 @@
 package it.paa.model.dto;
 
-import it.paa.model.entity.Genre;
-import it.paa.model.entity.validation.book.PastYearCostraint;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import it.paa.model.entity.validation.book.PastYearConstraint;
 import jakarta.validation.constraints.*;
 
 public class BookDTO {
@@ -12,7 +8,7 @@ public class BookDTO {
     private String title;
 
     @NotNull(message = "publishing date must not be null")
-    @PastYearCostraint
+    @PastYearConstraint
     private Integer publishingDate;
 
     @NotNull(message = "page number must not be null")

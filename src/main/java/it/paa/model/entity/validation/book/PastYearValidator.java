@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 
-public class PastYearValidator implements ConstraintValidator<PastYearCostraint, Integer> {
+public class PastYearValidator implements ConstraintValidator<PastYearConstraint, Integer> {
 
     @Override
     public boolean isValid(Integer year, ConstraintValidatorContext constraintValidatorContext) {

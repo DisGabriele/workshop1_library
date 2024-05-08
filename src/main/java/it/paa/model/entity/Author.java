@@ -2,8 +2,6 @@ package it.paa.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 import java.util.List;

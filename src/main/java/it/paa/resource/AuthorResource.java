@@ -3,22 +3,17 @@ package it.paa.resource;
 import it.paa.model.dto.AuthorDTO;
 import it.paa.model.dto.BookAuthorDTO;
 import it.paa.model.entity.Author;
-import it.paa.model.entity.Book;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.AuthorService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Path("/authors")
 public class AuthorResource {

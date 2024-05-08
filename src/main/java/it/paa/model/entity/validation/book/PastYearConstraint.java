@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = PastYearValidator.class)
-public @interface PastYearCostraint {
+public @interface PastYearConstraint {
     String message() default "publishing date must in the past";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

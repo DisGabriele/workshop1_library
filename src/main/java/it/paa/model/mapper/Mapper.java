@@ -7,7 +7,6 @@ import it.paa.model.entity.Genre;
 import it.paa.model.entity.Review;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class Mapper {

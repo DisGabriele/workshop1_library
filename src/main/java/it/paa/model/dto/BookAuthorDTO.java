@@ -1,11 +1,8 @@
 package it.paa.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.paa.model.entity.Author;
 import it.paa.model.entity.Genre;
-import it.paa.model.entity.Review;
-import jakarta.persistence.*;
 
 import java.util.List;
 
