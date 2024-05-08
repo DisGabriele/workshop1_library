@@ -1,21 +1,21 @@
 package it.paa.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalDouble;
 
 @Entity
 @Table(name = "genres")
-//@UniqueConstraintGenre
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description", columnDefinition = "text")
@@ -63,11 +63,21 @@ public class Genre {
         this.books.add(book);
     }
 
+    @JsonIgnore
+    public Double getAverageRating() {
+        OptionalDouble averageRating = getBooks().stream()
+                .mapToDouble(Book::getAverageRating)
+                .average();
+
+        return averageRating.orElse(0.0);
+    }
+
     public boolean oldEquals(Genre genre) {
         return
                 this.name.equals(genre.getName()) &&
                         this.description.equals(genre.getDescription());
     }
+
 
     @Override
     public boolean equals(Object o) {

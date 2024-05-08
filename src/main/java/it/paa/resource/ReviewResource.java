@@ -58,6 +58,7 @@ public class ReviewResource {
                 }
             }
 
+            //check per fare in modo che la data può essere messa in entrambi i modi
             if (endDateString != null) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

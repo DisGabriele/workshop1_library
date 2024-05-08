@@ -3,6 +3,7 @@ package it.paa.model.dto;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -13,7 +14,7 @@ public class AuthorDTO {
     @NotBlank(message = "surname cannot be empty")
     private String surname;
 
-    @Past(message = "birth date must be in the past")
+    @PastOrPresent(message = "birth date must not be in the future")
     private LocalDate birthDate;
 
     public AuthorDTO() {}

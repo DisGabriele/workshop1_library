@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.NoContentException;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class GenreService implements GenreRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Genre> getAll(String name, String description) throws Exception {
+    public List<Genre> getAll(String name, String description) throws NoContentException {
         String query = "SELECT g FROM Genre g";
         List<Genre> genres;
         if (name != null && !name.isEmpty() && !name.isBlank() &&
@@ -39,7 +40,7 @@ public class GenreService implements GenreRepository {
             genres = entityManager.createQuery(query, Genre.class).getResultList();
         }
         if (genres.isEmpty())
-            throw new Exception("no genres found");
+            throw new NoContentException("no genres found");
 
         return genres;
     }

@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.NoContentException;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class AuthorService implements AuthorRepository {
 
 
     @Override
-    public List<Author> getAll(String name, String surname) throws Exception {
-        String query = "SELECT a FROM Author";
+    public List<Author> getAll(String name, String surname) throws NoContentException {
+        String query = "SELECT a FROM Author a";
         List<Author> authors;
         if (name != null && !name.isEmpty() && !name.isBlank() &&
                 surname != null && !surname.isEmpty() && !surname.isBlank()) {
@@ -38,13 +39,12 @@ public class AuthorService implements AuthorRepository {
                     .getResultList();
         }
         else {
-            authors = entityManager.createQuery(query.concat("WHERE LOWER(a.surname) = LOWER(:surname)"),Author.class)
-                    .setParameter("surname", surname)
+            authors = entityManager.createQuery(query,Author.class)
                     .getResultList();
         }
         
         if(authors.isEmpty()){
-            throw new Exception("No authors found");
+            throw new NoContentException("No authors found");
         }
         
         return authors;

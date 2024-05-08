@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalDouble;
 
 @Entity
 @Table(name = "authors")
@@ -16,7 +17,7 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "surname")

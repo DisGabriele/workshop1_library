@@ -1,10 +1,12 @@
 package it.paa.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Entity
 @Table(name = "books")
@@ -99,11 +101,24 @@ public class Book {
         this.reviews.add(review);
     }
 
+    @JsonIgnore
+    public Double getAverageRating() {
+        System.out.println(getReviews().size());
+        OptionalDouble averageRating = getReviews().stream()
+                .mapToInt(review ->{
+                    System.out.println(review.getScore());
+                    return review.getScore();
+                } )
+                .average();
+
+        return averageRating.orElse(0.0);
+    }
+
     public boolean oldEquals(Book book) {
         return
                 this.title.equals(book.getTitle()) &&
-                        this.publishingDate == book.getPublishingDate() &&
-                        this.pageNumber == book.getPageNumber() &&
+                        this.publishingDate.equals(book.getPublishingDate()) &&
+                        this.pageNumber.equals(book.getPageNumber()) &&
                         this.author.equals(book.getAuthor()) &&
                         this.genre.equals(book.getGenre());
     }

@@ -1,7 +1,9 @@
 package it.paa.resource;
 
 import it.paa.model.dto.AuthorDTO;
+import it.paa.model.dto.BookAuthorDTO;
 import it.paa.model.entity.Author;
+import it.paa.model.entity.Book;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.AuthorService;
 import jakarta.inject.Inject;
@@ -10,6 +12,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -32,7 +35,7 @@ public class AuthorResource {
             return Response.ok(authors)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
-        } catch (Exception e) {
+        } catch (NoContentException e) {
             return Response.noContent()
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
@@ -46,6 +49,28 @@ public class AuthorResource {
         try {
             Author author = authorService.getById(id);
             return Response.ok(author)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/id/{id}/books")
+    public Response getBooks(@PathParam("id") Long id) {
+        try {
+            Author author = authorService.getById(id);
+
+            List<BookAuthorDTO> bookAuthorDTOList = author.getBooks().stream()
+                    .map(Mapper::bookAuthorMapper)
+                    .toList();
+
+
+            return Response.ok(bookAuthorDTOList)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (NotFoundException e) {

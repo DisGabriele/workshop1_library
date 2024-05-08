@@ -1,6 +1,7 @@
 package it.paa.resource;
 
 import it.paa.model.dto.GenreDTO;
+import it.paa.model.dto.GenreReviewDTO;
 import it.paa.model.entity.Genre;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.GenreService;
@@ -11,8 +12,10 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,6 +54,36 @@ public class GenreResource {
                     .build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/average_rating")
+    public Response getAverageRatingById() {
+        try {
+            List<GenreReviewDTO> genreReviewDTOList = new ArrayList<>();
+
+            genreService.getAll("","").forEach(genre ->{
+                        GenreReviewDTO genreReviewDTO = new GenreReviewDTO();
+                        genreReviewDTO.setGenre(genre);
+                        genreReviewDTO.setAverageReview(genre.getAverageRating());
+                        genreReviewDTOList.add(genreReviewDTO);
+                    });
+
+            return Response.ok(genreReviewDTOList)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+        catch (NoContentException e){
+            return Response.noContent()
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
                     .build();
