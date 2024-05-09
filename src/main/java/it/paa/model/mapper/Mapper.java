@@ -24,7 +24,7 @@ public class Mapper {
         author.setName(authorDTO.getName());
         author.setSurname(authorDTO.getSurname());
         author.setBirthDate(authorDTO.getBirthDate());
-        author.setNationality(author.getNationality());
+        author.setNationality(authorDTO.getNationality());
 
         return author;
     }

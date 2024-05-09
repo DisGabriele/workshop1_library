@@ -2,6 +2,7 @@ package it.paa.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,7 @@ public class Review {
     private Integer score;
 
     @Column(name = "date")
+    @PastOrPresent(message = "date cannot be in the future")
     private LocalDate date;
 
     @ManyToOne

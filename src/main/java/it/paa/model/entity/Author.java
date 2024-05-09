@@ -1,7 +1,9 @@
 package it.paa.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Objects;
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -21,6 +24,7 @@ public class Author {
     private String surname;
 
     @Column(name = "birth_date")
+    @PastOrPresent(message = "birth date must not be in the future")
     private LocalDate birthDate;
 
     @Column(name = "nationality")

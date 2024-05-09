@@ -1,12 +1,12 @@
 package it.paa.model.dto;
 
+import it.paa.model.entity.validation.book.IsADate;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class ReviewDTO {
 
@@ -15,12 +15,10 @@ public class ReviewDTO {
 
     @Min(value = 1,message = "score must be higher than 1")
     @Max(value = 5,message = "score must be lower than 5")
-    @Column(name = "score")
     private Integer score;
 
-    @Column(name = "date")
-    @PastOrPresent(message = "date cannot be in the future")
-    private LocalDate date;
+    @IsADate
+    private String date;
 
     public ReviewDTO() {}
 
@@ -41,10 +39,16 @@ public class ReviewDTO {
     }
 
     public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatter);
+        } catch (DateTimeParseException e) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                return LocalDate.parse(date, formatter);
+            } catch (DateTimeParseException ex) {
+                return null;
+            }
+        }
     }
 }

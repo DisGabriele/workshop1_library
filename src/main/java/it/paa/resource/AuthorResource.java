@@ -7,19 +7,25 @@ import it.paa.model.mapper.Mapper;
 import it.paa.service.AuthorService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Set;
 
 @Path("/authors")
 public class AuthorResource {
 
     @Inject
     AuthorService authorService;
+
+    @Inject
+    Validator validator;
 
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
@@ -80,6 +86,18 @@ public class AuthorResource {
     public Response create(@Valid AuthorDTO authorDTO) {
         Author author = Mapper.authorMapper(authorDTO);
 
+        Set<ConstraintViolation<Author>> validations = validator.validate(author);
+
+        if(!validations.isEmpty()){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
+                            + ": "
+                            + violation.getMessage()
+                    ))
+                    .build();
+
+        };
+
         return Response.status(Response.Status.CREATED)
                 .entity(authorService.save(author))
                 .build();
@@ -92,6 +110,18 @@ public class AuthorResource {
         Author old = authorService.getById(id);
         Author author = Mapper.authorMapper(authorDTO);
         author.setId(id);
+
+        Set<ConstraintViolation<Author>> validations = validator.validate(author);
+
+        if(!validations.isEmpty()){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
+                            + ": "
+                            + violation.getMessage()
+                    ))
+                    .build();
+
+        };
 
         if (!author.oldEquals(old)) {
             return Response.ok(

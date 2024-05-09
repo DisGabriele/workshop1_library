@@ -1,6 +1,7 @@
 package it.paa.resource;
 
 import it.paa.model.dto.ReviewDTO;
+import it.paa.model.entity.Author;
 import it.paa.model.entity.Book;
 import it.paa.model.entity.Review;
 import it.paa.model.mapper.Mapper;
@@ -8,7 +9,9 @@ import it.paa.service.BookService;
 import it.paa.service.ReviewService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NoContentException;
@@ -18,6 +21,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
 
 @Path("/reviews")
 public class ReviewResource {
@@ -27,6 +31,9 @@ public class ReviewResource {
 
     @Inject
     BookService bookService;
+
+    @Inject
+    Validator validator;
 
     @GET
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
@@ -121,6 +128,18 @@ public class ReviewResource {
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setBook(book);
 
+        Set<ConstraintViolation<Review>> validations = validator.validate(review);
+
+        if(!validations.isEmpty()){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
+                            + ": "
+                            + violation.getMessage()
+                    ))
+                    .build();
+
+        };
+
         return Response.status(Response.Status.CREATED)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(reviewService.save(review))
@@ -135,6 +154,18 @@ public class ReviewResource {
         Review old = reviewService.getById(id);
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setId(old.getId());
+
+        Set<ConstraintViolation<Review>> validations = validator.validate(review);
+
+        if(!validations.isEmpty()){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
+                            + ": "
+                            + violation.getMessage()
+                    ))
+                    .build();
+
+        };
 
         if (!review.oldEquals(old)) {
             return Response.ok(

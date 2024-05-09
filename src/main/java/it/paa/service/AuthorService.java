@@ -5,6 +5,7 @@ import it.paa.repository.AuthorRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.NoContentException;
 

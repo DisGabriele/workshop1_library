@@ -1,9 +1,13 @@
 package it.paa.model.dto;
 
+import it.paa.model.entity.validation.book.IsADate;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class AuthorDTO {
     @NotBlank(message = "name cannot be empty")
@@ -12,11 +16,10 @@ public class AuthorDTO {
     @NotBlank(message = "surname cannot be empty")
     private String surname;
 
-    @NotBlank(message = "nationality cannot be empty")
     private String nationality;
 
-    @PastOrPresent(message = "birth date must not be in the future")
-    private LocalDate birthDate;
+    @IsADate
+    private String birthDate;
 
     public AuthorDTO() {}
 
@@ -45,10 +48,17 @@ public class AuthorDTO {
     }
 
     public LocalDate getBirthDate() {
-        return birthDate;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(this.birthDate, formatter);
+        } catch (DateTimeParseException e) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                return LocalDate.parse(this.birthDate, formatter);
+            } catch (DateTimeParseException ex) {
+                return null;
+            }
+        }
     }
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
 }
