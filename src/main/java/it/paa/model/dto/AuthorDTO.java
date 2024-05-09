@@ -2,14 +2,12 @@ package it.paa.model.dto;
 
 import it.paa.model.entity.validation.book.IsADate;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-//Utilizzato classe DTO per la POST e PUT per non far inserire alcuni campi nella chiamata (id, quelli di tipo oggetto)
+//Utilizzato per la POST e la PUT in modo da non far inserire manualmente id e lista di Book
 public class AuthorDTO {
     @NotBlank(message = "name cannot be empty")
     private String name;

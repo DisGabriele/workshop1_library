@@ -6,6 +6,7 @@ import it.paa.model.entity.Genre;
 
 import java.util.List;
 
+//DTO usato per l'esercizio 2
 public class BookAuthorDTO {
 
     private Long id;

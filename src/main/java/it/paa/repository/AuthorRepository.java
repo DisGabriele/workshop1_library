@@ -7,9 +7,9 @@ import jakarta.ws.rs.core.NoContentException;
 import java.util.List;
 
 public interface AuthorRepository {
-    public List<Author> getAll(String name, String surname) throws NoContentException;
-    public Author getById(Long id) throws NotFoundException;
-    public Author save(Author author) throws Exception;
-    public Author update(Author author) throws Exception;
-    public void delete(Long Id) throws NotFoundException;
+    List<Author> getAll(String name, String surname) throws NoContentException;
+    Author getById(Long id) throws NotFoundException;
+    Author save(Author author) throws Exception;
+    Author update(Author author) throws Exception;
+    void delete(Long Id) throws NotFoundException;
 }

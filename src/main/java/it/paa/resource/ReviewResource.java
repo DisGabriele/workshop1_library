@@ -38,6 +38,9 @@ public class ReviewResource {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
+    /*
+    GET all con possibilità di filtrare per score e intervallo di tempo date 2 date
+     */
     @GET
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
         try {
@@ -113,6 +116,9 @@ public class ReviewResource {
         }
     }
 
+    /*
+    POST di una review dato un libro
+     */
     @POST
     @Path("/book_id/{book_id}")
     @Consumes(MediaType.APPLICATION_JSON)

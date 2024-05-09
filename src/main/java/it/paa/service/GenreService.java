@@ -16,6 +16,9 @@ public class GenreService implements GenreRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /*
+    GET all con possibilità di filtrare se viene passato qualche parametro, altrimenti ritorna la lista completa
+     */
     @Override
     public List<Genre> getAll(String name, String description) throws NoContentException {
         String query = "SELECT g FROM Genre g";

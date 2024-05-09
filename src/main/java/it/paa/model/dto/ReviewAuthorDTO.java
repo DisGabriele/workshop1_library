@@ -6,6 +6,7 @@ import it.paa.model.entity.Book;
 
 import java.time.LocalDate;
 
+//DTO usato per l'esercizio 2
 public class ReviewAuthorDTO {
 
     private Long id;

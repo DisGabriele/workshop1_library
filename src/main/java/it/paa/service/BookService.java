@@ -16,6 +16,11 @@ public class BookService implements BookRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /*
+    GET all con possibilità di filtrare se viene passato qualche parametro
+    (per l'intervallo di tempo, implementata verifica per far inserire o entrambe le date o nessuna),
+    altrimenti ritorna la lista completa
+     */
     @Override
     public List<Book> getAll(String title, Integer startDate, Integer endDate) throws IllegalArgumentException, NoContentException {
         String query = "SELECT b FROM Book b";

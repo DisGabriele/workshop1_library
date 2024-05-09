@@ -26,9 +26,14 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "book", referencedColumnName = "id")
     @JsonManagedReference
+    /*
+    per far visualizzare il Book nella get
+    per l'esercizio 2, ho utilizzato 2 dto (ReviewAuthorDTO,BookAuthorDTO)con la reference inversa (back reference di book nella Review e managed reference nella lista Review di Book)
+    */
     private Book book;
 
-    public Review(){}
+    public Review() {
+    }
 
     public Long getId() {
         return id;

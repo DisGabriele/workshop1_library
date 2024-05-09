@@ -14,7 +14,6 @@ import java.util.Objects;
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -30,7 +29,7 @@ public class Author {
     @Column(name = "nationality")
     private String nationality;
 
-    @JsonBackReference
+    @JsonBackReference //per non far visualizzare la lista quando si va a fare una get
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Book> books;
 

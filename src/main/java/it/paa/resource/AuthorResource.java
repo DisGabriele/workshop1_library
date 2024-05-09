@@ -31,6 +31,9 @@ public class AuthorResource {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
+    /*
+    GET all con possibilità di filtrare per name e surname
+     */
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
         try {
@@ -62,6 +65,9 @@ public class AuthorResource {
         }
     }
 
+    /*
+    GET della lista di libri associati ad un autore
+     */
     @GET
     @Path("/id/{id}/books")
     public Response getBooks(@PathParam("id") Long id) {

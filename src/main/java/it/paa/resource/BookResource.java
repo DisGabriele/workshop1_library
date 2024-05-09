@@ -30,6 +30,9 @@ public class BookResource {
     @Inject
     AuthorService authorService;
 
+    /*
+    GET all con possibilità di filtrare per titolo e intervallo di tempo date 2 date
+     */
     @GET
     public Response getAll(@QueryParam("title") String title, @QueryParam("start date") Integer startDate, @QueryParam("end date") Integer endDate) {
         try {
@@ -59,6 +62,28 @@ public class BookResource {
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    /*
+    GET delle review di un libro
+     */
+    @GET
+    @Path("/id/{id}/reviews")
+    public Response getReviews(@PathParam("id") Long id) {
+        try{
+            Book book = bookService.getById(id);
+
+            return Response.ok(book.getReviews())
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+
+        }
+        catch(NotFoundException e){
             return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())

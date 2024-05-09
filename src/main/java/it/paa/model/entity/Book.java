@@ -36,6 +36,10 @@ public class Book {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
+    /*
+    per non far visualizzare la lista quando si va a fare una get
+    per l'esercizio 2, ho utilizzato 2 dto (ReviewAuthorDTO,BookAuthorDTO)con la reference inversa (back reference di book nella Review e managed reference nella lista Review di Book)
+     */
     private List<Review> reviews;
 
     public Book() {

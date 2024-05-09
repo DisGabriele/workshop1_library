@@ -2,6 +2,7 @@ package it.paa.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
+//Utilizzato per la POST e la PUT in modo da non far inserire manualmente id e lista di Book
 public class GenreDTO {
     @NotBlank(message = "name cannot be empty")
     private String name;

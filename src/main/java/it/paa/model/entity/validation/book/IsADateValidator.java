@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/*
+Implementazione del validator delle date
+ */
 public class IsADateValidator implements ConstraintValidator<IsADate, String> {
 
     @Override
@@ -14,6 +17,7 @@ public class IsADateValidator implements ConstraintValidator<IsADate, String> {
         if(date == null || date.isEmpty() || date.isBlank())
             return false;
 
+        //vari try catch per provare a passare la stringa contenente la data in vari formati
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate.parse(date, formatter);

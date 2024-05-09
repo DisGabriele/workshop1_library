@@ -5,6 +5,7 @@ import it.paa.model.entity.Genre;
 
 import java.text.DecimalFormat;
 
+//DTO utilizzato per l'average rating dei Genre
 public class GenreReviewDTO {
     private Genre genre;
     private Double averageReview;

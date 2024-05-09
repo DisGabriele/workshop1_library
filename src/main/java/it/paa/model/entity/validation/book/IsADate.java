@@ -8,6 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/*
+Validator per fare in modo che si posso inserire date in vari formati (yyyy-MM-dd,dd-MM-yyyy)
+e verificare se sia una data valida
+ */
+
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = IsADateValidator.class)

@@ -23,6 +23,9 @@ public class GenreResource {
     @Inject
     GenreService genreService;
 
+    /*
+    GET all con possibilità di filtrare per name e description
+     */
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("description") String description) {
         try {
@@ -54,6 +57,9 @@ public class GenreResource {
         }
     }
 
+    /*
+    GET dell'average reting delle review dei libri associati a questo genere
+     */
     @GET
     @Path("/average_rating")
     public Response getAverageRatingById() {

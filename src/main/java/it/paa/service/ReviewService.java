@@ -17,7 +17,11 @@ public class ReviewService implements ReviewRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    /*
+    GET all con possibilità di filtrare se viene passato qualche parametro
+    (per l'intervallo di tempo, implementata verifica per far inserire o entrambe le date o nessuna),
+    altrimenti ritorna la lista completa
+     */
     @Override
     public List<Review> getAll(Integer score, LocalDate startDate, LocalDate endDate) throws IllegalArgumentException, NoContentException {
         String query = "SELECT r FROM Review r";

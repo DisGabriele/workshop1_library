@@ -17,7 +17,9 @@ public class AuthorService implements AuthorRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    /*
+    GET all con possibilità di filtrare se viene passato qualche parametro, altrimenti ritorna la lista completa
+     */
     @Override
     public List<Author> getAll(String name, String surname) throws NoContentException {
         String query = "SELECT a FROM Author a";

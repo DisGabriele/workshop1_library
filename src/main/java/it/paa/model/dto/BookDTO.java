@@ -3,6 +3,7 @@ package it.paa.model.dto;
 import it.paa.model.entity.validation.book.PastYearConstraint;
 import jakarta.validation.constraints.*;
 
+//usato per la POST e la GET per non far inserire manualmente id e lista Review
 public class BookDTO {
     @NotBlank(message = "title cannot be empty")
     private String title;
