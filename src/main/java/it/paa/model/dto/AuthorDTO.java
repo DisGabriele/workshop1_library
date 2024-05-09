@@ -17,7 +17,7 @@ public class AuthorDTO {
 
     private String nationality;
 
-    //usato stringa per questo custom validator per permettere di inserire una data nei formati "yyyy-MM-dd" e "dd-MM-yyyy"
+    //usato stringa per questo validator personalizzato per permettere di inserire una data nei formati "yyyy-MM-dd" e "dd-MM-yyyy"
     @IsADate
     private String birthDate;
 
