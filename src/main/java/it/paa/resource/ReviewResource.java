@@ -1,7 +1,6 @@
 package it.paa.resource;
 
 import it.paa.model.dto.ReviewDTO;
-import it.paa.model.entity.Author;
 import it.paa.model.entity.Book;
 import it.paa.model.entity.Review;
 import it.paa.model.mapper.Mapper;
@@ -11,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -32,8 +32,11 @@ public class ReviewResource {
     @Inject
     BookService bookService;
 
-    @Inject
-    Validator validator;
+    private final Validator validator;
+
+    ReviewResource(){
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
+    }
 
     @GET
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
@@ -137,8 +140,7 @@ public class ReviewResource {
                             + violation.getMessage()
                     ))
                     .build();
-
-        };
+        }
 
         return Response.status(Response.Status.CREATED)
                 .type(MediaType.APPLICATION_JSON)
@@ -164,8 +166,7 @@ public class ReviewResource {
                             + violation.getMessage()
                     ))
                     .build();
-
-        };
+        }
 
         if (!review.oldEquals(old)) {
             return Response.ok(

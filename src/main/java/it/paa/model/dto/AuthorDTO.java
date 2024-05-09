@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+//Utilizzato classe DTO per la POST e PUT per non far inserire alcuni campi nella chiamata (id, quelli di tipo oggetto)
 public class AuthorDTO {
     @NotBlank(message = "name cannot be empty")
     private String name;
@@ -18,6 +19,7 @@ public class AuthorDTO {
 
     private String nationality;
 
+    //usato stringa per questo custom validator per permettere di inserire una data nei formati "yyyy-MM-dd" e "dd-MM-yyyy"
     @IsADate
     private String birthDate;
 

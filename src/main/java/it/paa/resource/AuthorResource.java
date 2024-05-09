@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -24,8 +25,12 @@ public class AuthorResource {
     @Inject
     AuthorService authorService;
 
-    @Inject
-    Validator validator;
+    private final Validator validator;
+
+    AuthorResource(){
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
+    }
+
 
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
@@ -95,8 +100,7 @@ public class AuthorResource {
                             + violation.getMessage()
                     ))
                     .build();
-
-        };
+        }
 
         return Response.status(Response.Status.CREATED)
                 .entity(authorService.save(author))
