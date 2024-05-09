@@ -31,7 +31,6 @@ public class AuthorResource {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
-
     @GET
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
         try {
