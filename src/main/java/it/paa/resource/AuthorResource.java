@@ -26,8 +26,7 @@ public class AuthorResource {
     AuthorService authorService;
 
     private final Validator validator;
-
-    String ciao;
+    
 
     AuthorResource(){
         validator = Validation.buildDefaultValidatorFactory().getValidator();
