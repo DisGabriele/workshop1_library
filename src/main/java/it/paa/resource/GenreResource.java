@@ -7,7 +7,6 @@ import it.paa.model.mapper.Mapper;
 import it.paa.service.GenreService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -111,6 +110,7 @@ public class GenreResource {
         Genre old = genreService.getById(id);
         Genre genre = Mapper.genreMapper(genreDTO);
         genre.setId(id);
+        genre.setBooks(old.getBooks());
 
         if (!genre.oldEquals(old)) {
             return Response.ok(

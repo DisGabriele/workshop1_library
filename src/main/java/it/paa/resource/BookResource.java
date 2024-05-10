@@ -133,6 +133,7 @@ public class BookResource {
         Book old = bookService.getById(id);
         Book book = Mapper.bookMapper(bookDTO);
         book.setId(old.getId());
+        book.setReviews(old.getReviews());
 
         Author author;
         try {

@@ -119,6 +119,7 @@ public class AuthorResource {
         Author old = authorService.getById(id);
         Author author = Mapper.authorMapper(authorDTO);
         author.setId(id);
+        author.setBooks(old.getBooks());
 
         Set<ConstraintViolation<Author>> validations = validator.validate(author);
 
