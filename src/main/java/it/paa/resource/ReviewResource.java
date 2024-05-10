@@ -162,6 +162,7 @@ public class ReviewResource {
         Review old = reviewService.getById(id);
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setId(old.getId());
+        review.setBook(old.getBook());
 
         Set<ConstraintViolation<Review>> validations = validator.validate(review);
 
