@@ -147,6 +147,7 @@ public class AuthorResource {
 
     @DELETE
     @Path("/id/{id}")
+    @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {
             authorService.delete(id);
