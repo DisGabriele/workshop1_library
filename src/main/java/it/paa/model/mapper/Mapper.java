@@ -1,10 +1,7 @@
 package it.paa.model.mapper;
 
 import it.paa.model.dto.*;
-import it.paa.model.entity.Author;
-import it.paa.model.entity.Book;
-import it.paa.model.entity.Genre;
-import it.paa.model.entity.Review;
+import it.paa.model.entity.*;
 
 import java.util.List;
 
@@ -74,6 +71,21 @@ public class Mapper {
         bookAuthorDTO.setPageNumber(book.getPageNumber());
 
         return bookAuthorDTO;
+    }
+
+    public static Role roleMapper(RoleDTO roleDTO){
+        Role role = new Role();
+        role.setName(roleDTO.getName());
+
+        return role;
+    }
+
+    public static User userMapper(UserDTO userDTO){
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(userDTO.getPassword());
+
+        return user;
     }
 
 }

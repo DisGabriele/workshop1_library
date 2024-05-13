@@ -1,0 +1,15 @@
+package it.paa.repository;
+
+import it.paa.model.entity.User;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.NoContentException;
+
+import java.util.List;
+
+public interface UserRepository {
+    List<User> getAll() throws NoContentException;
+    User getById(Long id) throws NotFoundException;
+    User add(User user) throws Exception;
+    User update(User user) throws Exception;
+    void delete(Long id) throws NotFoundException;
+}
