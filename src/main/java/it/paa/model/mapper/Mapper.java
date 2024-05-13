@@ -4,6 +4,7 @@ import it.paa.model.dto.*;
 import it.paa.model.entity.*;
 
 import java.util.List;
+import java.util.Locale;
 
 
 public class Mapper {
@@ -75,7 +76,7 @@ public class Mapper {
 
     public static Role roleMapper(RoleDTO roleDTO){
         Role role = new Role();
-        role.setName(roleDTO.getName());
+        role.setName(roleDTO.getName().toLowerCase(Locale.ROOT));
 
         return role;
     }

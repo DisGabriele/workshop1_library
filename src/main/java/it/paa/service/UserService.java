@@ -5,6 +5,7 @@ import it.paa.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.NoContentException;
 
@@ -22,7 +23,7 @@ public class UserService implements UserRepository {
 
         List<User> users = entityManager.createQuery(query, User.class).getResultList();
 
-        if(users.isEmpty())
+        if (users.isEmpty())
             throw new NotFoundException("no users found");
 
         return users;
@@ -32,22 +33,30 @@ public class UserService implements UserRepository {
     public User getById(Long id) throws NotFoundException {
         User user = entityManager.find(User.class, id);
 
-        if(user == null)
+        if (user == null)
             throw new NotFoundException("user not found");
 
         return user;
     }
 
     @Override
-    public User add(User user) throws Exception {
-        entityManager.persist(user);
-        return user;
+    public User save(User user) throws PersistenceException {
+        try {
+            entityManager.persist(user);
+            return user;
+        } catch (PersistenceException e) {
+            throw new PersistenceException("user with this username already exists");
+        }
     }
 
     @Override
-    public User update(User user) throws Exception {
-        entityManager.merge(user);
-        return user;
+    public User update(User user) throws PersistenceException {
+        try {
+            entityManager.merge(user);
+            return user;
+        } catch (PersistenceException e) {
+            throw new PersistenceException("user with this username already exists");
+        }
     }
 
     @Override

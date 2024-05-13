@@ -5,6 +5,7 @@ import it.paa.model.entity.Role;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.RoleService;
 import jakarta.inject.Inject;
+import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -76,7 +77,7 @@ public class RoleResource {
             return Response.status(Response.Status.CREATED)
                     .entity(roleService.save(role))
                     .build();
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
@@ -89,7 +90,6 @@ public class RoleResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid RoleDTO roleDTO) {
-
         Role old = roleService.getById(id);
         Role role = Mapper.roleMapper(roleDTO);
         role.setId(id);
@@ -106,7 +106,7 @@ public class RoleResource {
                         .entity(old)
                         .build();
             }
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())

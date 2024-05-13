@@ -4,6 +4,7 @@ import it.paa.model.entity.Role;
 import it.paa.repository.RoleRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
@@ -41,39 +42,39 @@ public class RoleService implements RoleRepository {
     }
 
     public Role getByName(String name) throws NotFoundException {
-        String query = "SELECT r FROM Role r WHERE r.name = :name";
+        String query = "SELECT r FROM Role r WHERE LOWER(r.name) = LOWER(:name)";
 
-        Role role = entityManager.createQuery(query, Role.class)
+        try{
+            return entityManager.createQuery(query, Role.class)
                 .setParameter("name", name)
                 .getSingleResult();
-
-        if (role == null)
+        } catch (NoResultException e){
             throw new NotFoundException("role with name " + name + " not found");
 
-        return role;
+        }
     }
 
     @Override
-    public Role save(Role role) throws Exception {
+    public Role save(Role role) throws PersistenceException {
         try {
             entityManager.persist(role);
             entityManager.flush();
 
             return role;
         } catch (PersistenceException e) {
-            throw new Exception("role with this name already exists");
+            throw new PersistenceException("role with this name already exists");
         }
     }
 
     @Override
-    public Role update(Role role) throws Exception {
+    public Role update(Role role) throws PersistenceException {
         try {
             entityManager.merge(role);
             entityManager.flush();
 
             return role;
         } catch (PersistenceException e) {
-            throw new Exception("role with this name already exists");
+            throw new PersistenceException("role with this name already exists");
         }
     }
 
