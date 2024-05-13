@@ -1,4 +1,4 @@
-package it.paa;
+package it.paa.util;
 
 public enum Roles {
     ADMIN("1"),
