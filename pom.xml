@@ -73,6 +73,10 @@
             <artifactId>jakarta.ejb-api</artifactId>
             <version>4.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-elytron-security-jdbc</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -108,6 +112,7 @@
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
+                        <java.home>${java.home}</java.home>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -127,6 +132,7 @@
                         <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
+                        <java.home>${java.home}</java.home>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
