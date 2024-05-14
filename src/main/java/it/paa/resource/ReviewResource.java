@@ -25,6 +25,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
 
+//ho diviso i metodi per le varie autorizzazioni
+
 @Path("/reviews")
 public class ReviewResource {
 
@@ -103,6 +105,8 @@ public class ReviewResource {
         }
     }
 
+    //TODO get all per utente
+
     @GET
     @Path("/id/{id}")
     @RolesAllowed(Roles.ADMIN)
@@ -120,7 +124,7 @@ public class ReviewResource {
         }
     }
 
-    //TODO fare get all e get by id delle recensioni dell'utente
+    //TODO get by id delle recensioni dell'utente
 
     /*
     POST di una review dato un libro
@@ -165,7 +169,7 @@ public class ReviewResource {
     @Path("/id/{id}") //TODO dopo aver testato questa, fare in modo che gli passi il book id
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
-    @RolesAllowed(Roles.USER)
+    @RolesAllowed(Roles.USER) //TODO fare check per cui può modificare solo le sue reviews
     public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
         Review old = reviewService.getById(id);
         Review review = Mapper.reviewMapper(reviewDTO);
@@ -209,4 +213,6 @@ public class ReviewResource {
                     .build();
         }
     }
+
+    //TODO delete per review in modo che l'utente può eliminare solo le sue reviews
 }

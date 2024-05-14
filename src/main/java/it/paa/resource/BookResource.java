@@ -132,9 +132,9 @@ public class BookResource {
 
     @PUT
     @Path("/id/{id}")
+    @RolesAllowed(Roles.ADMIN)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid BookDTO bookDTO) {
         Book old = bookService.getById(id);
         Book book = Mapper.bookMapper(bookDTO);

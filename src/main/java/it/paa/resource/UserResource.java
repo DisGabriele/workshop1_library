@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("users")
+@Path("/users")
 public class UserResource {
 
     @Inject
