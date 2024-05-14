@@ -111,6 +111,7 @@ public class UserResource {
         User user = Mapper.userMapper(userDTO);
         old.setId(id);
         old.setRole(role);
+        user.setReviews(old.getReviews());
 
         try {
             if (!user.oldEquals(old)) {

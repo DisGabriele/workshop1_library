@@ -4,6 +4,7 @@ import it.paa.model.entity.User;
 import it.paa.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
@@ -37,6 +38,13 @@ public class UserService implements UserRepository {
             throw new NotFoundException("user not found");
 
         return user;
+    }
+
+    @Override
+    public User getByName(String username) throws NoResultException {
+        return entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+                .setParameter("username",username)
+                .getSingleResult();
     }
 
     @Override

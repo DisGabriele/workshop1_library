@@ -32,6 +32,11 @@ public class Review {
     */
     private Book book;
 
+    @ManyToOne
+    @JoinColumn(name = "user", referencedColumnName = "id")
+    @JsonManagedReference
+    private User user;
+
     public Review() {
     }
 
@@ -73,6 +78,14 @@ public class Review {
 
     public void setBook(Book book) {
         this.book = book;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public boolean oldEquals(Review review) {

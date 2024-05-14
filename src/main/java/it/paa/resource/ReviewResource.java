@@ -3,21 +3,22 @@ package it.paa.resource;
 import it.paa.model.dto.ReviewDTO;
 import it.paa.model.entity.Book;
 import it.paa.model.entity.Review;
+import it.paa.model.entity.User;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.BookService;
 import it.paa.service.ReviewService;
+import it.paa.service.UserService;
 import it.paa.util.Roles;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.NoContentException;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +36,12 @@ public class ReviewResource {
 
     @Inject
     BookService bookService;
+
+    @Inject
+    UserService userService;
+
+    @Context
+    SecurityContext securityContext;
 
     private final Validator validator;
 
@@ -135,6 +142,17 @@ public class ReviewResource {
     @Transactional
     @RolesAllowed(Roles.USER)
     public Response create(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
+        User user;
+        try{
+            user = userService.getByName(securityContext.getUserPrincipal().getName());
+        } catch(NoResultException e){
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
+
         Book book;
         try {
             book = bookService.getById(bookId);
@@ -147,6 +165,7 @@ public class ReviewResource {
 
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setBook(book);
+        review.setUser(user);
 
         Set<ConstraintViolation<Review>> validations = validator.validate(review);
 
@@ -201,7 +220,7 @@ public class ReviewResource {
 
     @DELETE
     @Path("/id/{id}")
-    @Transactional //lo lascio a tutti visto che un admin può rimuovere una recensione, ad esempio per linguaggio scurrile, non coerente ecc...
+    @Transactional //lo lascio a tutti visto che un admin può rimuovere una recensione (come se fosse un moderatore)
     public Response delete(@PathParam("id") Long id) {
         try {
             reviewService.delete(id);

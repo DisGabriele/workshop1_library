@@ -1,5 +1,6 @@
 package it.paa.model.mapper;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
 import it.paa.model.dto.*;
 import it.paa.model.entity.*;
 
@@ -76,7 +77,7 @@ public class Mapper {
     public static User userMapper(UserDTO userDTO){
         User user = new User();
         user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(BcryptUtil.bcryptHash(userDTO.getPassword()));
 
         return user;
     }
