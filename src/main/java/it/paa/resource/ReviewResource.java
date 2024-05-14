@@ -165,7 +165,7 @@ public class ReviewResource {
 
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setBook(book);
-        review.setUser(user);
+        review.setUser_id(user);
 
         Set<ConstraintViolation<Review>> validations = validator.validate(review);
 
