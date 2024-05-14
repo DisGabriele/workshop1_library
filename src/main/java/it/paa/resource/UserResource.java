@@ -6,6 +6,8 @@ import it.paa.model.entity.User;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.RoleService;
 import it.paa.service.UserService;
+import it.paa.util.Roles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
@@ -27,6 +29,7 @@ public class UserResource {
     RoleService roleService;
 
     @GET
+    @RolesAllowed(Roles.ADMIN)
     public Response getAll() {
         try {
             List<User> users = userService.getAll();
@@ -44,6 +47,7 @@ public class UserResource {
 
     @GET
     @Path("/id/{id}")
+    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             User user = userService.getById(id);
@@ -62,6 +66,7 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response create(@Valid UserDTO userDTO) {
         Role role;
         try {
@@ -93,6 +98,7 @@ public class UserResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid UserDTO userDTO) {
         Role role;
         try {
@@ -127,4 +133,25 @@ public class UserResource {
                     .build();
         }
     }
+
+    @DELETE
+    @Path("/id/{id}")
+    @Transactional
+    @RolesAllowed(Roles.ADMIN)
+    public Response delete(@PathParam("id") Long id) {
+        try{
+            userService.delete(id);
+
+            return Response.ok()
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        catch (NotFoundException e){
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
 }

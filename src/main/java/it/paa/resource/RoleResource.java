@@ -1,13 +1,12 @@
 package it.paa.resource;
 
-import it.paa.model.dto.RoleDTO;
 import it.paa.model.entity.Role;
-import it.paa.model.mapper.Mapper;
 import it.paa.service.RoleService;
+import it.paa.util.Roles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -21,6 +20,7 @@ public class RoleResource {
     RoleService roleService;
 
     @GET
+    @RolesAllowed(Roles.ADMIN)
     public Response getAll() {
         try {
             List<Role> roles = roleService.getAll();
@@ -37,6 +37,7 @@ public class RoleResource {
 
     @GET
     @Path("/id/{id}")
+    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             Role role = roleService.getById(id);
@@ -53,6 +54,7 @@ public class RoleResource {
 
     @GET
     @Path("/name/{name}")
+    @RolesAllowed(Roles.ADMIN)
     public Response getByName(@PathParam("name") String name) {
         try {
             Role role = roleService.getByName(name);
@@ -70,9 +72,17 @@ public class RoleResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response create(@Valid RoleDTO roleDTO) {
+    @RolesAllowed(Roles.ADMIN)
+    public Response create(@QueryParam("role name") String roleName) {
         try {
-            Role role = Mapper.roleMapper(roleDTO);
+            if(roleName == null || roleName.isEmpty() || roleName.isBlank()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("role cannot be empty")
+                        .build();
+            }
+            Role role = new Role();
+            role.setName(roleName);
 
             return Response.status(Response.Status.CREATED)
                     .entity(roleService.save(role))
@@ -89,10 +99,18 @@ public class RoleResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response update(@PathParam("id") Long id, @Valid RoleDTO roleDTO) {
+    @RolesAllowed(Roles.ADMIN)
+    public Response update(@PathParam("id") Long id, @QueryParam("role name") String roleName) {
+        if(roleName == null || roleName.isEmpty() || roleName.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("role cannot be empty")
+                    .build();
+        }
         Role old = roleService.getById(id);
-        Role role = Mapper.roleMapper(roleDTO);
+        Role role = new Role();
         role.setId(id);
+        role.setName(roleName);
         role.setUsers(old.getUsers());
 
         try {
@@ -117,6 +135,7 @@ public class RoleResource {
     @DELETE
     @Path("/id/{id}")
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {
         try {
             roleService.delete(id);

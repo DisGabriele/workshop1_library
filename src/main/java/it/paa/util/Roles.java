@@ -1,15 +1,7 @@
 package it.paa.util;
 
-public enum Roles {
-    ADMIN("1"),
-    USER("2");
-    private final String value;
-
-    Roles(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
+public class Roles {
+    public static final String ADMIN = "1";
+    public static final String USER = "2";
 }
+

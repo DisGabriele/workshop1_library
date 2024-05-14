@@ -5,6 +5,8 @@ import it.paa.model.dto.GenreReviewDTO;
 import it.paa.model.entity.Genre;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.GenreService;
+import it.paa.util.Roles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ public class GenreResource {
     GET all con possibilità di filtrare per name e description
      */
     @GET
+    @RolesAllowed(Roles.ADMIN)
     public Response getAll(@QueryParam("name") String name, @QueryParam("description") String description) {
         try {
             List<Genre> genres = genreService.getAll(name, description);
@@ -42,6 +45,7 @@ public class GenreResource {
 
     @GET
     @Path("/id/{id}")
+    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             Genre genre = genreService.getById(id);
@@ -61,6 +65,7 @@ public class GenreResource {
      */
     @GET
     @Path("/average_rating")
+    @RolesAllowed(Roles.ADMIN)
     public Response getAverageRatingById() {
         try {
             List<GenreReviewDTO> genreReviewDTOList = new ArrayList<>();
@@ -91,6 +96,7 @@ public class GenreResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response create(@Valid GenreDTO genreDTO) {
 
         Genre genre = Mapper.genreMapper(genreDTO);
@@ -105,6 +111,7 @@ public class GenreResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid GenreDTO genreDTO) {
 
         Genre old = genreService.getById(id);
@@ -127,6 +134,7 @@ public class GenreResource {
     @DELETE
     @Path("/id/{id}")
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {
         try {
             genreService.delete(id);

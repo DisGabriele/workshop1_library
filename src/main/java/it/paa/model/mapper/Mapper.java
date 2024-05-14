@@ -4,7 +4,6 @@ import it.paa.model.dto.*;
 import it.paa.model.entity.*;
 
 import java.util.List;
-import java.util.Locale;
 
 
 public class Mapper {
@@ -72,13 +71,6 @@ public class Mapper {
         bookAuthorDTO.setPageNumber(book.getPageNumber());
 
         return bookAuthorDTO;
-    }
-
-    public static Role roleMapper(RoleDTO roleDTO){
-        Role role = new Role();
-        role.setName(roleDTO.getName().toLowerCase(Locale.ROOT));
-
-        return role;
     }
 
     public static User userMapper(UserDTO userDTO){

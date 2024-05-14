@@ -8,6 +8,8 @@ import it.paa.model.mapper.Mapper;
 import it.paa.service.AuthorService;
 import it.paa.service.BookService;
 import it.paa.service.GenreService;
+import it.paa.util.Roles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -55,6 +57,7 @@ public class BookResource {
 
     @GET
     @Path("/id/{id}")
+    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             Book book = bookService.getById(id);
@@ -74,6 +77,7 @@ public class BookResource {
      */
     @GET
     @Path("/id/{id}/reviews")
+    @RolesAllowed(Roles.ADMIN)
     public Response getReviews(@PathParam("id") Long id) {
         try{
             Book book = bookService.getById(id);
@@ -94,6 +98,7 @@ public class BookResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response create(@Valid BookDTO bookDTO) {
         Author author;
         try {
@@ -129,6 +134,7 @@ public class BookResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid BookDTO bookDTO) {
         Book old = bookService.getById(id);
         Book book = Mapper.bookMapper(bookDTO);
@@ -173,6 +179,7 @@ public class BookResource {
     @DELETE
     @Path("/id/{id}")
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {
         try {
             bookService.delete(id);

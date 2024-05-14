@@ -6,6 +6,8 @@ import it.paa.model.entity.Review;
 import it.paa.model.mapper.Mapper;
 import it.paa.service.BookService;
 import it.paa.service.ReviewService;
+import it.paa.util.Roles;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -42,6 +44,7 @@ public class ReviewResource {
     GET all con possibilità di filtrare per score e intervallo di tempo date 2 date
      */
     @GET
+    @RolesAllowed(Roles.ADMIN)
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
         try {
             LocalDate startDate = null;
@@ -102,6 +105,7 @@ public class ReviewResource {
 
     @GET
     @Path("/id/{id}")
+    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             Review review = reviewService.getById(id);
@@ -116,6 +120,8 @@ public class ReviewResource {
         }
     }
 
+    //TODO fare get all e get by id delle recensioni dell'utente
+
     /*
     POST di una review dato un libro
      */
@@ -123,6 +129,7 @@ public class ReviewResource {
     @Path("/book_id/{book_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.USER)
     public Response create(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
         Book book;
         try {
@@ -155,9 +162,10 @@ public class ReviewResource {
     }
 
     @PUT
-    @Path("/id/{id}")
+    @Path("/id/{id}") //TODO dopo aver testato questa, fare in modo che gli passi il book id
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
+    @RolesAllowed(Roles.USER)
     public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
         Review old = reviewService.getById(id);
         Review review = Mapper.reviewMapper(reviewDTO);
@@ -189,7 +197,7 @@ public class ReviewResource {
 
     @DELETE
     @Path("/id/{id}")
-    @Transactional
+    @Transactional //lo lascio a tutti visto che un admin può rimuovere una recensione, ad esempio per linguaggio scurrile, non coerente ecc...
     public Response delete(@PathParam("id") Long id) {
         try {
             reviewService.delete(id);
