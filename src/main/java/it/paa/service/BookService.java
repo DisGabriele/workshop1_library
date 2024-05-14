@@ -5,6 +5,7 @@ import it.paa.repository.BookRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.NoContentException;
 
@@ -68,15 +69,25 @@ public class BookService implements BookRepository {
     }
 
     @Override
-    public Book save(Book book) {
+    public Book save(Book book) throws PersistenceException {
+        try{
         entityManager.persist(book);
+        entityManager.flush();
         return book;
+        } catch (PersistenceException e){
+            throw new PersistenceException("book with this title already exists");
+        }
     }
 
     @Override
     public Book update(Book book) {
-        entityManager.merge(book);
-        return book;
+        try{
+            entityManager.persist(book);
+            entityManager.flush();
+            return book;
+        } catch (PersistenceException e){
+            throw new PersistenceException("book with this title already exists");
+        }
     }
 
     @Override

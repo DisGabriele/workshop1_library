@@ -51,6 +51,7 @@ public class UserService implements UserRepository {
     public User save(User user) throws PersistenceException {
         try {
             entityManager.persist(user);
+            entityManager.flush();
             return user;
         } catch (PersistenceException e) {
             throw new PersistenceException("user with this username already exists");
@@ -61,6 +62,7 @@ public class UserService implements UserRepository {
     public User update(User user) throws PersistenceException {
         try {
             entityManager.merge(user);
+            entityManager.flush();
             return user;
         } catch (PersistenceException e) {
             throw new PersistenceException("user with this username already exists");

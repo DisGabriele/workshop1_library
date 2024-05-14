@@ -71,12 +71,6 @@ public class User {
         this.reviews = reviews;
     }
 
-    public boolean oldEquals(User user) {
-        return this.username.equals(user.getUsername()) &&
-                this.password.equals(user.getPassword()) &&
-                this.role.equals(user.getRole());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

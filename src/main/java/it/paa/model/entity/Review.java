@@ -7,7 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "reviews", uniqueConstraints = @UniqueConstraint(columnNames = {"book","user_id"}))
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

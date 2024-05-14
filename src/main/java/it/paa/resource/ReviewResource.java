@@ -12,6 +12,7 @@ import it.paa.util.Roles;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class ReviewResource {
 
     private final Validator validator;
 
-    ReviewResource(){
+    ReviewResource() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
@@ -53,7 +54,7 @@ public class ReviewResource {
     GET all con possibilità di filtrare per score e intervallo di tempo date 2 date
      */
     @GET
-    @RolesAllowed(Roles.ADMIN)
+    @RolesAllowed({Roles.ADMIN, Roles.USER})
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
         try {
             LocalDate startDate = null;
@@ -94,8 +95,11 @@ public class ReviewResource {
                     }
                 }
             }
+            String username = "";
+            if (securityContext.isUserInRole(Roles.USER))
+                username = securityContext.getUserPrincipal().getName();
 
-            List<Review> review = reviewService.getAll(score, startDate, endDate);
+            List<Review> review = reviewService.getAll(score, startDate, endDate, username);
             return Response.ok(review)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
@@ -112,14 +116,23 @@ public class ReviewResource {
         }
     }
 
-    //TODO get all per utente
-
     @GET
     @Path("/id/{id}")
-    @RolesAllowed(Roles.ADMIN)
+    @RolesAllowed({Roles.ADMIN, Roles.USER})
     public Response getById(@PathParam("id") Long id) {
         try {
             Review review = reviewService.getById(id);
+
+            if (securityContext.isUserInRole(Roles.USER)) {
+                String username;
+                username = securityContext.getUserPrincipal().getName();
+
+                if (!review.getUser_id().getUsername().equals(username))
+                    return Response.status(Response.Status.FORBIDDEN)
+                            .type(MediaType.TEXT_PLAIN)
+                            .entity("cannot view review written by other users")
+                            .build();
+            }
             return Response.ok(review)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
@@ -131,8 +144,6 @@ public class ReviewResource {
         }
     }
 
-    //TODO get by id delle recensioni dell'utente
-
     /*
     POST di una review dato un libro
      */
@@ -143,9 +154,9 @@ public class ReviewResource {
     @RolesAllowed(Roles.USER)
     public Response create(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
         User user;
-        try{
+        try {
             user = userService.getByName(securityContext.getUserPrincipal().getName());
-        } catch(NoResultException e){
+        } catch (NoResultException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
@@ -169,37 +180,55 @@ public class ReviewResource {
 
         Set<ConstraintViolation<Review>> validations = validator.validate(review);
 
-        if(!validations.isEmpty()){
+        if (!validations.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
+                    .entity(validations.stream().map(violation -> violation.getPropertyPath()
                             + ": "
                             + violation.getMessage()
                     ))
                     .build();
         }
 
-        return Response.status(Response.Status.CREATED)
-                .type(MediaType.APPLICATION_JSON)
-                .entity(reviewService.save(review))
-                .build();
+        try {
+            return Response.status(Response.Status.CREATED)
+                    .type(MediaType.APPLICATION_JSON)
+                    .entity(reviewService.save(review))
+                    .build();
+        } catch (PersistenceException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @PUT
     @Path("/id/{id}") //TODO dopo aver testato questa, fare in modo che gli passi il book id
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
-    @RolesAllowed(Roles.USER) //TODO fare check per cui può modificare solo le sue reviews
+    @RolesAllowed(Roles.USER)
     public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
         Review old = reviewService.getById(id);
+
+        String username;
+        username = securityContext.getUserPrincipal().getName();
+
+        if (!old.getUser_id().getUsername().equals(username))
+            return Response.status(Response.Status.FORBIDDEN)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("cannot edit review written by other users")
+                    .build();
+
         Review review = Mapper.reviewMapper(reviewDTO);
         review.setId(old.getId());
         review.setBook(old.getBook());
+        review.setUser_id(old.getUser_id());
 
         Set<ConstraintViolation<Review>> validations = validator.validate(review);
 
-        if(!validations.isEmpty()){
+        if (!validations.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
+                    .entity(validations.stream().map(violation -> violation.getPropertyPath()
                             + ": "
                             + violation.getMessage()
                     ))
@@ -220,10 +249,26 @@ public class ReviewResource {
 
     @DELETE
     @Path("/id/{id}")
-    @Transactional //lo lascio a tutti visto che un admin può rimuovere una recensione (come se fosse un moderatore)
+    @Transactional
+    @RolesAllowed({Roles.ADMIN, Roles.USER})
+    //lo lascio a tutti visto che un admin può rimuovere una recensione (come se fosse un moderatore)
     public Response delete(@PathParam("id") Long id) {
         try {
-            reviewService.delete(id);
+            Review review = reviewService.getById(id);
+
+            if (securityContext.isUserInRole(Roles.USER)) {
+                String username;
+                username = securityContext.getUserPrincipal().getName();
+
+                if (!review.getUser_id().getUsername().equals(username))
+                    return Response.status(Response.Status.FORBIDDEN)
+                            .type(MediaType.TEXT_PLAIN)
+                            .entity("cannot delete review written by other users")
+                            .build();
+            }
+
+            reviewService.delete(review);
+
             return Response.ok().build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -233,5 +278,4 @@ public class ReviewResource {
         }
     }
 
-    //TODO delete per review in modo che l'utente può eliminare solo le sue reviews
 }

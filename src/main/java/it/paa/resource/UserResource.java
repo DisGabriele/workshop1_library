@@ -1,5 +1,6 @@
 package it.paa.resource;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
 import it.paa.model.dto.UserDTO;
 import it.paa.model.entity.Role;
 import it.paa.model.entity.User;
@@ -109,14 +110,17 @@ public class UserResource {
 
         User old = userService.getById(id);
         User user = Mapper.userMapper(userDTO);
-        old.setId(id);
-        old.setRole(role);
+        user.setId(id);
+        user.setRole(role);
         user.setReviews(old.getReviews());
 
         try {
-            if (!user.oldEquals(old)) {
+            if (!(user.getUsername().equals(old.getUsername())) &&
+                    BcryptUtil.matches(userDTO.getPassword(), old.getPassword()) &&
+                    user.getRole().equals(old.getRole())
+            ) {
                 return Response.ok(
-                        roleService.update(role)
+                        userService.update(user)
                 ).build();
             } else {
                 return Response.status(Response.Status.NOT_MODIFIED)
@@ -136,14 +140,13 @@ public class UserResource {
     @Path("/id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
-        try{
+        try {
             userService.delete(id);
 
             return Response.ok()
                     .type(MediaType.TEXT_PLAIN)
                     .build();
-        }
-        catch (NotFoundException e){
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())

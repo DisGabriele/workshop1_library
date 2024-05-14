@@ -11,6 +11,7 @@ import it.paa.service.GenreService;
 import it.paa.util.Roles;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -79,15 +80,14 @@ public class BookResource {
     @Path("/id/{id}/reviews")
     @RolesAllowed(Roles.ADMIN)
     public Response getReviews(@PathParam("id") Long id) {
-        try{
+        try {
             Book book = bookService.getById(id);
 
             return Response.ok(book.getReviews())
                     .type(MediaType.APPLICATION_JSON)
                     .build();
 
-        }
-        catch(NotFoundException e){
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
@@ -124,10 +124,17 @@ public class BookResource {
         book.setAuthor(author);
         book.setGenre(genre);
 
-        return Response.status(Response.Status.CREATED)
-                .type(MediaType.APPLICATION_JSON)
-                .entity(bookService.save(book))
-                .build();
+        try {
+            return Response.status(Response.Status.CREATED)
+                    .type(MediaType.APPLICATION_JSON)
+                    .entity(bookService.save(book))
+                    .build();
+        } catch (PersistenceException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @PUT
@@ -165,9 +172,16 @@ public class BookResource {
         book.setGenre(genre);
 
         if (!book.oldEquals(old)) {
-            return Response.ok(
-                    bookService.update(book)
-            ).build();
+            try {
+                return Response.ok(
+                        bookService.update(book)
+                ).build();
+            } catch (PersistenceException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(e.getMessage())
+                        .build();
+            }
         } else {
             return Response.status(Response.Status.NOT_MODIFIED)
                     .type(MediaType.APPLICATION_JSON)
@@ -191,4 +205,5 @@ public class BookResource {
                     .build();
         }
     }
+
 }

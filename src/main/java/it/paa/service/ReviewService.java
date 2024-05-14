@@ -1,10 +1,12 @@
 package it.paa.service;
 
 import it.paa.model.entity.Review;
+import it.paa.model.entity.User;
 import it.paa.repository.ReviewRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.NoContentException;
 
@@ -23,7 +25,7 @@ public class ReviewService implements ReviewRepository {
     altrimenti ritorna la lista completa
      */
     @Override
-    public List<Review> getAll(Integer score, LocalDate startDate, LocalDate endDate) throws IllegalArgumentException, NoContentException {
+    public List<Review> getAll(Integer score, LocalDate startDate, LocalDate endDate, String username) throws IllegalArgumentException, NoContentException {
         String query = "SELECT r FROM Review r";
         List<Review> reviews;
         if (score != null && startDate != null && endDate != null) {
@@ -52,6 +54,16 @@ public class ReviewService implements ReviewRepository {
                     .getResultList();
         }
 
+        if(username != null && !username.isEmpty() && !username.isBlank()){
+            User user = entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username",User.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+
+            reviews = reviews.stream()
+                    .filter(review -> review.getUser_id().equals(user))
+                    .toList();
+        }
+
         if (reviews.isEmpty())
             throw new NoContentException("no reviews found");
 
@@ -69,9 +81,14 @@ public class ReviewService implements ReviewRepository {
     }
 
     @Override
-    public Review save(Review review) {
+    public Review save(Review review) throws PersistenceException{
+        try{
         entityManager.persist(review);
+        entityManager.flush();
         return review;
+        } catch (PersistenceException e){
+            throw new PersistenceException("you've already written a review for this book");
+        }
     }
 
     @Override
@@ -81,8 +98,7 @@ public class ReviewService implements ReviewRepository {
     }
 
     @Override
-    public void delete(Long id) throws NotFoundException {
-        Review review = getById(id);
+    public void delete(Review review) {
         entityManager.remove(review);
     }
 }
