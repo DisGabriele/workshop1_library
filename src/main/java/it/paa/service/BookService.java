@@ -4,6 +4,7 @@ import it.paa.model.entity.Book;
 import it.paa.repository.BookRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
@@ -94,5 +95,12 @@ public class BookService implements BookRepository {
     public void delete(Long id) throws NotFoundException {
         Book book = getById(id);
         entityManager.remove(book);
+    }
+
+    @Override
+    public Book getByTitle(String title) throws NoResultException {
+        return entityManager.createQuery("SELECT b FROM Book b WHERE LOWER(b.title) = LOWER(:title)",Book.class)
+                .setParameter("title",title)
+                .getSingleResult();
     }
 }

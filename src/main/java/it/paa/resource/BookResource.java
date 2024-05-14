@@ -11,6 +11,7 @@ import it.paa.service.GenreService;
 import it.paa.util.Roles;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -94,6 +95,26 @@ public class BookResource {
                     .build();
         }
     }
+
+
+    @GET
+    @Path("/title/{title}")
+    @RolesAllowed(Roles.ADMIN)
+        public Response getReviewsByTitle(@PathParam("title") String title) {
+            try {
+                Book book = bookService.getByTitle(title);
+
+                return Response.ok(book.getReviews())
+                        .type(MediaType.APPLICATION_JSON)
+                        .build();
+
+            } catch (NoResultException e) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("book with title " + title + " not found")
+                        .build();
+            }
+        }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

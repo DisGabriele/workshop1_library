@@ -202,6 +202,61 @@ public class ReviewResource {
         }
     }
 
+    @POST
+    @Path("/book_title/{title}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    @RolesAllowed(Roles.USER)
+    public Response createFromTitle(@PathParam("title") String title, @Valid ReviewDTO reviewDTO) {
+        User user;
+        try {
+            user = userService.getByName(securityContext.getUserPrincipal().getName());
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+
+
+        Book book;
+        try {
+            book = bookService.getByTitle(title);
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("book with title " + title + " not found")
+                    .build();
+        }
+
+        Review review = Mapper.reviewMapper(reviewDTO);
+        review.setBook(book);
+        review.setUser_id(user);
+
+        Set<ConstraintViolation<Review>> validations = validator.validate(review);
+
+        if (!validations.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(validations.stream().map(violation -> violation.getPropertyPath()
+                            + ": "
+                            + violation.getMessage()
+                    ))
+                    .build();
+        }
+
+        try {
+            return Response.status(Response.Status.CREATED)
+                    .type(MediaType.APPLICATION_JSON)
+                    .entity(reviewService.save(review))
+                    .build();
+        } catch (PersistenceException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
     @PUT
     @Path("/id/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
