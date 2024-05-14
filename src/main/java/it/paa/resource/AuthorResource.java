@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 @Path("/authors")
+@RolesAllowed(Roles.ADMIN)
 public class AuthorResource {
 
     @Inject
@@ -37,7 +38,6 @@ public class AuthorResource {
     GET all con possibilità di filtrare per name e surname
      */
     @GET
-    @RolesAllowed(Roles.ADMIN)
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
         try {
             List<Author> authors = authorService.getAll(name, surname);
@@ -54,7 +54,6 @@ public class AuthorResource {
 
     @GET
     @Path("/id/{id}")
-    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
@@ -74,7 +73,6 @@ public class AuthorResource {
      */
     @GET
     @Path("/id/{id}/books")
-    @RolesAllowed(Roles.ADMIN)
     public Response getBooks(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
@@ -98,7 +96,6 @@ public class AuthorResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response create(@Valid AuthorDTO authorDTO) {
         Author author = Mapper.authorMapper(authorDTO);
 
@@ -121,7 +118,6 @@ public class AuthorResource {
     @PUT
     @Path("/id/{id}")
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid AuthorDTO authorDTO) {
         Author old = authorService.getById(id);
         Author author = Mapper.authorMapper(authorDTO);
@@ -155,7 +151,6 @@ public class AuthorResource {
     @DELETE
     @Path("/id/{id}")
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {
         try {
             authorService.delete(id);

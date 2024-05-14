@@ -20,6 +20,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/users")
+@RolesAllowed(Roles.ADMIN)
 public class UserResource {
 
     @Inject
@@ -29,7 +30,6 @@ public class UserResource {
     RoleService roleService;
 
     @GET
-    @RolesAllowed(Roles.ADMIN)
     public Response getAll() {
         try {
             List<User> users = userService.getAll();
@@ -47,7 +47,6 @@ public class UserResource {
 
     @GET
     @Path("/id/{id}")
-    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             User user = userService.getById(id);
@@ -66,7 +65,6 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response create(@Valid UserDTO userDTO) {
         Role role;
         try {
@@ -98,7 +96,6 @@ public class UserResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid UserDTO userDTO) {
         Role role;
         try {
@@ -137,7 +134,6 @@ public class UserResource {
     @DELETE
     @Path("/id/{id}")
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {
         try{
             userService.delete(id);

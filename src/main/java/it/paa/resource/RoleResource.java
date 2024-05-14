@@ -14,13 +14,13 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/roles")
+@RolesAllowed(Roles.ADMIN)
 public class RoleResource {
 
     @Inject
     RoleService roleService;
 
     @GET
-    @RolesAllowed(Roles.ADMIN)
     public Response getAll() {
         try {
             List<Role> roles = roleService.getAll();
@@ -37,7 +37,6 @@ public class RoleResource {
 
     @GET
     @Path("/id/{id}")
-    @RolesAllowed(Roles.ADMIN)
     public Response getById(@PathParam("id") Long id) {
         try {
             Role role = roleService.getById(id);
@@ -54,7 +53,6 @@ public class RoleResource {
 
     @GET
     @Path("/name/{name}")
-    @RolesAllowed(Roles.ADMIN)
     public Response getByName(@PathParam("name") String name) {
         try {
             Role role = roleService.getByName(name);
@@ -72,7 +70,6 @@ public class RoleResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response create(@QueryParam("role name") String roleName) {
         try {
             if(roleName == null || roleName.isEmpty() || roleName.isBlank()) {
@@ -99,7 +96,6 @@ public class RoleResource {
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @QueryParam("role name") String roleName) {
         if(roleName == null || roleName.isEmpty() || roleName.isBlank()) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -135,7 +131,6 @@ public class RoleResource {
     @DELETE
     @Path("/id/{id}")
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {
         try {
             roleService.delete(id);
