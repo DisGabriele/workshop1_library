@@ -5,6 +5,7 @@ import it.paa.model.entity.User;
 import it.paa.repository.ReviewRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
@@ -78,6 +79,13 @@ public class ReviewService implements ReviewRepository {
             throw new NotFoundException("Review not found");
 
         return review;
+    }
+
+    public Review getByBookTitleAndUser(String title, String username) throws NoResultException {
+        return entityManager.createQuery("SELECT r FROM Review r WHERE LOWER(r.book.title) = LOWER(:title) AND r.user_id.username = :username", Review.class)
+                .setParameter("title", title)
+                .setParameter("username", username)
+                .getSingleResult();
     }
 
     @Override

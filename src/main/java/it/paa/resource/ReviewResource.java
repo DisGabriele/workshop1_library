@@ -203,46 +203,105 @@ public class ReviewResource {
     }
 
     @PUT
-    @Path("/id/{id}") //TODO dopo aver testato questa, fare in modo che gli passi il book id
+    @Path("/id/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
     @RolesAllowed(Roles.USER)
     public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
-        Review old = reviewService.getById(id);
+        try {
+            Review old = reviewService.getById(id);
 
+            String username;
+            username = securityContext.getUserPrincipal().getName();
+
+            if (!old.getUser_id().getUsername().equals(username))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("cannot edit review written by other users")
+                        .build();
+
+            Review review = Mapper.reviewMapper(reviewDTO);
+            review.setId(old.getId());
+            review.setBook(old.getBook());
+            review.setUser_id(old.getUser_id());
+
+            Set<ConstraintViolation<Review>> validations = validator.validate(review);
+
+            if (!validations.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(validations.stream().map(violation -> violation.getPropertyPath()
+                                + ": "
+                                + violation.getMessage()
+                        ))
+                        .build();
+            }
+
+            if (!review.oldEquals(old)) {
+                return Response.ok(
+                        reviewService.update(review)
+                ).build();
+            } else {
+                return Response.status(Response.Status.NOT_MODIFIED)
+                        .type(MediaType.APPLICATION_JSON)
+                        .entity(old)
+                        .build();
+            }
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @PUT
+    @Path("/book_title/{title}")
+    @Consumes({MediaType.APPLICATION_JSON}) //modifica review di un utente dato il libro
+    @Transactional
+    @RolesAllowed(Roles.USER)
+    public Response updateByTitle(@PathParam("title") String title, @Valid ReviewDTO reviewDTO) {
         String username;
         username = securityContext.getUserPrincipal().getName();
 
-        if (!old.getUser_id().getUsername().equals(username))
-            return Response.status(Response.Status.FORBIDDEN)
+        try {
+            Review old = reviewService.getByBookTitleAndUser(title, username);
+
+            if (!old.getUser_id().getUsername().equals(username))
+                return Response.status(Response.Status.FORBIDDEN)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("cannot edit review written by other users")
+                        .build();
+
+            Review review = Mapper.reviewMapper(reviewDTO);
+            review.setId(old.getId());
+            review.setBook(old.getBook());
+            review.setUser_id(old.getUser_id());
+
+            Set<ConstraintViolation<Review>> validations = validator.validate(review);
+
+            if (!validations.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(validations.stream().map(violation -> violation.getPropertyPath()
+                                + ": "
+                                + violation.getMessage()
+                        ))
+                        .build();
+            }
+
+            if (!review.oldEquals(old)) {
+                return Response.ok(
+                        reviewService.update(review)
+                ).build();
+            } else {
+                return Response.status(Response.Status.NOT_MODIFIED)
+                        .type(MediaType.APPLICATION_JSON)
+                        .entity(old)
+                        .build();
+            }
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
-                    .entity("cannot edit review written by other users")
-                    .build();
-
-        Review review = Mapper.reviewMapper(reviewDTO);
-        review.setId(old.getId());
-        review.setBook(old.getBook());
-        review.setUser_id(old.getUser_id());
-
-        Set<ConstraintViolation<Review>> validations = validator.validate(review);
-
-        if (!validations.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(validations.stream().map(violation -> violation.getPropertyPath()
-                            + ": "
-                            + violation.getMessage()
-                    ))
-                    .build();
-        }
-
-        if (!review.oldEquals(old)) {
-            return Response.ok(
-                    reviewService.update(review)
-            ).build();
-        } else {
-            return Response.status(Response.Status.NOT_MODIFIED)
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(old)
+                    .entity(username + " did not written a review for book with title " + title)
                     .build();
         }
     }
@@ -278,4 +337,29 @@ public class ReviewResource {
         }
     }
 
+    @DELETE
+    @Path("/book_title/{title}")
+    @Transactional
+    @RolesAllowed({Roles.USER}) //eliminare recensione dell'utente dato il titolo di un libro
+    public Response deleteByBook(@PathParam("title") String title) {
+            String username;
+            username = securityContext.getUserPrincipal().getName();
+
+            User user = userService.getByName(username);
+
+            Review review = user.getReviews().stream().filter(review1 -> review1.getBook().getTitle().equals(title))
+                    .findFirst().orElse(null);
+
+            if(review != null){
+                user.getReviews().remove(review);
+                userService.update(user);
+                return Response.ok().build();
+            }
+            else
+                return Response.status(Response.Status.NOT_FOUND)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(username + " did not write a review for book with tile " + title)
+                        .build();
+
+    }
 }

@@ -97,31 +97,38 @@ public class RoleResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @QueryParam("role name") String roleName) {
-        if(roleName == null || roleName.isEmpty() || roleName.isBlank()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity("role cannot be empty")
-                    .build();
-        }
-        Role old = roleService.getById(id);
-        Role role = new Role();
-        role.setId(id);
-        role.setName(roleName);
-        role.setUsers(old.getUsers());
-
         try {
-            if (!role.oldEquals(old)) {
-                return Response.ok(
-                        roleService.update(role)
-                ).build();
-            } else {
-                return Response.status(Response.Status.NOT_MODIFIED)
-                        .type(MediaType.APPLICATION_JSON)
-                        .entity(old)
+            if (roleName == null || roleName.isEmpty() || roleName.isBlank()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("role cannot be empty")
                         .build();
             }
-        } catch (PersistenceException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            Role old = roleService.getById(id);
+            Role role = new Role();
+            role.setId(id);
+            role.setName(roleName);
+            role.setUsers(old.getUsers());
+
+            try {
+                if (!role.oldEquals(old)) {
+                    return Response.ok(
+                            roleService.update(role)
+                    ).build();
+                } else {
+                    return Response.status(Response.Status.NOT_MODIFIED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity(old)
+                            .build();
+                }
+            } catch (PersistenceException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(e.getMessage())
+                        .build();
+            }
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
                     .build();

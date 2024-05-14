@@ -98,38 +98,46 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid UserDTO userDTO) {
-        Role role;
         try {
-            role = roleService.getByName(userDTO.getRole());
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(e.getMessage())
-                    .build();
-        }
+            User old = userService.getById(id);
 
-        User old = userService.getById(id);
-        User user = Mapper.userMapper(userDTO);
-        user.setId(id);
-        user.setRole(role);
-        user.setReviews(old.getReviews());
-
-        try {
-            if (!(user.getUsername().equals(old.getUsername())) &&
-                    BcryptUtil.matches(userDTO.getPassword(), old.getPassword()) &&
-                    user.getRole().equals(old.getRole())
-            ) {
-                return Response.ok(
-                        userService.update(user)
-                ).build();
-            } else {
-                return Response.status(Response.Status.NOT_MODIFIED)
-                        .type(MediaType.APPLICATION_JSON)
-                        .entity(old)
+            Role role;
+            try {
+                role = roleService.getByName(userDTO.getRole());
+            } catch (NotFoundException e) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(e.getMessage())
                         .build();
             }
-        } catch (PersistenceException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+
+            User user = Mapper.userMapper(userDTO);
+            user.setId(id);
+            user.setRole(role);
+            user.setReviews(old.getReviews());
+
+            try {
+                if (!(user.getUsername().equals(old.getUsername())) &&
+                        BcryptUtil.matches(userDTO.getPassword(), old.getPassword()) &&
+                        user.getRole().equals(old.getRole())
+                ) {
+                    return Response.ok(
+                            userService.update(user)
+                    ).build();
+                } else {
+                    return Response.status(Response.Status.NOT_MODIFIED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity(old)
+                            .build();
+                }
+            } catch (PersistenceException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(e.getMessage())
+                        .build();
+            }
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
                     .build();

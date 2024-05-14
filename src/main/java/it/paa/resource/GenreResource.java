@@ -98,7 +98,6 @@ public class GenreResource {
 
         Genre genre = Mapper.genreMapper(genreDTO);
 
-
         return Response.status(Response.Status.CREATED)
                 .entity(genreService.save(genre))
                 .build();
@@ -109,20 +108,26 @@ public class GenreResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid GenreDTO genreDTO) {
+        try {
+            Genre old = genreService.getById(id);
+            Genre genre = Mapper.genreMapper(genreDTO);
+            genre.setId(id);
+            genre.setBooks(old.getBooks());
 
-        Genre old = genreService.getById(id);
-        Genre genre = Mapper.genreMapper(genreDTO);
-        genre.setId(id);
-        genre.setBooks(old.getBooks());
-
-        if (!genre.oldEquals(old)) {
-            return Response.ok(
-                    genreService.update(genre)
-            ).build();
-        } else {
-            return Response.status(Response.Status.NOT_MODIFIED)
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(old)
+            if (!genre.oldEquals(old)) {
+                return Response.ok(
+                        genreService.update(genre)
+                ).build();
+            } else {
+                return Response.status(Response.Status.NOT_MODIFIED)
+                        .type(MediaType.APPLICATION_JSON)
+                        .entity(old)
+                        .build();
+            }
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
                     .build();
         }
     }

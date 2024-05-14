@@ -143,49 +143,56 @@ public class BookResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid BookDTO bookDTO) {
-        Book old = bookService.getById(id);
-        Book book = Mapper.bookMapper(bookDTO);
-        book.setId(old.getId());
-        book.setReviews(old.getReviews());
-
-        Author author;
         try {
-            author = authorService.getById(bookDTO.getAuthorId());
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(e.getMessage())
-                    .build();
-        }
+            Book old = bookService.getById(id);
+            Book book = Mapper.bookMapper(bookDTO);
+            book.setId(old.getId());
+            book.setReviews(old.getReviews());
 
-        Genre genre;
-        try {
-            genre = genreService.getById(bookDTO.getGenreId());
-        } catch (NotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(e.getMessage())
-                    .build();
-        }
-
-        book.setAuthor(author);
-        book.setGenre(genre);
-
-        if (!book.oldEquals(old)) {
+            Author author;
             try {
-                return Response.ok(
-                        bookService.update(book)
-                ).build();
-            } catch (PersistenceException e) {
-                return Response.status(Response.Status.BAD_REQUEST)
+                author = authorService.getById(bookDTO.getAuthorId());
+            } catch (NotFoundException e) {
+                return Response.status(Response.Status.NOT_FOUND)
                         .type(MediaType.TEXT_PLAIN)
                         .entity(e.getMessage())
                         .build();
             }
-        } else {
-            return Response.status(Response.Status.NOT_MODIFIED)
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(old)
+
+            Genre genre;
+            try {
+                genre = genreService.getById(bookDTO.getGenreId());
+            } catch (NotFoundException e) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(e.getMessage())
+                        .build();
+            }
+
+            book.setAuthor(author);
+            book.setGenre(genre);
+
+            if (!book.oldEquals(old)) {
+                try {
+                    return Response.ok(
+                            bookService.update(book)
+                    ).build();
+                } catch (PersistenceException e) {
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .type(MediaType.TEXT_PLAIN)
+                            .entity(e.getMessage())
+                            .build();
+                }
+            } else {
+                return Response.status(Response.Status.NOT_MODIFIED)
+                        .type(MediaType.APPLICATION_JSON)
+                        .entity(old)
+                        .build();
+            }
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
                     .build();
         }
     }

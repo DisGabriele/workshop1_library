@@ -119,31 +119,39 @@ public class AuthorResource {
     @Path("/id/{id}")
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid AuthorDTO authorDTO) {
-        Author old = authorService.getById(id);
-        Author author = Mapper.authorMapper(authorDTO);
-        author.setId(id);
-        author.setBooks(old.getBooks());
+        try {
+            Author old = authorService.getById(id);
+            Author author = Mapper.authorMapper(authorDTO);
+            author.setId(id);
+            author.setBooks(old.getBooks());
 
-        Set<ConstraintViolation<Author>> validations = validator.validate(author);
+            Set<ConstraintViolation<Author>> validations = validator.validate(author);
 
-        if(!validations.isEmpty()){
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(validations.stream().map(violation ->violation.getPropertyPath()
-                            + ": "
-                            + violation.getMessage()
-                    ))
-                    .build();
+            if (!validations.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(validations.stream().map(violation -> violation.getPropertyPath()
+                                + ": "
+                                + violation.getMessage()
+                        ))
+                        .build();
 
-        };
+            }
+            ;
 
-        if (!author.oldEquals(old)) {
-            return Response.ok(
-                    authorService.update(author)
-            ).build();
-        } else {
-            return Response.status(Response.Status.NOT_MODIFIED)
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(old)
+            if (!author.oldEquals(old)) {
+                return Response.ok(
+                        authorService.update(author)
+                ).build();
+            } else {
+                return Response.status(Response.Status.NOT_MODIFIED)
+                        .type(MediaType.APPLICATION_JSON)
+                        .entity(old)
+                        .build();
+            }
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity(e.getMessage())
                     .build();
         }
     }
