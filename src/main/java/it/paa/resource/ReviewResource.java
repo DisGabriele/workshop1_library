@@ -202,10 +202,12 @@ public class ReviewResource {
     @Path("/id/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
-    @RolesAllowed(Roles.USER)
+    @RolesAllowed({Roles.ADMIN,Roles.USER})
     public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
         try {
             Review old = reviewService.getById(id);
+
+            if(securityContext.isUserInRole(Roles.USER)){
 
             String username;
             username = securityContext.getUserPrincipal().getName();
@@ -216,6 +218,7 @@ public class ReviewResource {
                         .entity("cannot edit review written by other users")
                         .build();
 
+            }
             Review review = Mapper.reviewMapper(reviewDTO);
             review.setId(old.getId());
             review.setBook(old.getBook());
@@ -251,7 +254,7 @@ public class ReviewResource {
     @Path("/book_id/{book_id}")
     @Consumes({MediaType.APPLICATION_JSON}) //modifica review di un utente dato il libro
     @Transactional
-    @RolesAllowed(Roles.USER)
+    @RolesAllowed({Roles.ADMIN,Roles.USER})
     public Response updateByBookId(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
         String username;
         username = securityContext.getUserPrincipal().getName();
@@ -259,7 +262,7 @@ public class ReviewResource {
         try {
             Review old = reviewService.getByBookIdAndUser(bookId, username);
 
-            if (!old.getUser_id().getUsername().equals(username))
+            if (securityContext.isUserInRole(Roles.USER) && !old.getUser_id().getUsername().equals(username))
                 return Response.status(Response.Status.FORBIDDEN)
                         .type(MediaType.TEXT_PLAIN)
                         .entity("cannot edit review written by other users")
@@ -312,7 +315,7 @@ public class ReviewResource {
                 if (!review.getUser_id().getUsername().equals(username))
                     return Response.status(Response.Status.FORBIDDEN)
                             .type(MediaType.TEXT_PLAIN)
-                            .entity("cannot delete review written by other users")
+                            .entity("a user cannot delete review written by other users")
                             .build();
             }
 
@@ -330,7 +333,7 @@ public class ReviewResource {
     @DELETE
     @Path("/book_id/{book_id}")
     @Transactional
-    @RolesAllowed({Roles.USER}) //eliminare recensione dell'utente dato l'id di un libro
+    @RolesAllowed(Roles.USER) //eliminare recensione dell'utente dato l'id di un libro (solo user esistono piu' recensioni per un libro)
     public Response deleteByBookId(@PathParam("book_id") Long bookId) {
             String username;
             username = securityContext.getUserPrincipal().getName();
