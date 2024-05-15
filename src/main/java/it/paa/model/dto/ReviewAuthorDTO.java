@@ -2,7 +2,7 @@ package it.paa.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import it.paa.model.entity.Book;
-
+import it.paa.model.entity.User;
 
 import java.time.LocalDate;
 
@@ -16,6 +16,8 @@ public class ReviewAuthorDTO {
     private Integer score;
 
     private LocalDate date;
+
+    private User user;
 
     @JsonBackReference
     private Book book;
@@ -60,5 +62,13 @@ public class ReviewAuthorDTO {
 
     public void setBook(Book book) {
         this.book = book;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

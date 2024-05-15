@@ -52,6 +52,7 @@ public class Mapper {
         reviewAuthorDTO.setDate(review.getDate());
         reviewAuthorDTO.setScore(review.getScore());
         reviewAuthorDTO.setText(review.getText());
+        reviewAuthorDTO.setUser(review.getUser_id());
 
         return reviewAuthorDTO;
     }
@@ -59,6 +60,7 @@ public class Mapper {
     public static BookAuthorDTO bookAuthorMapper(Book book) {
         BookAuthorDTO bookAuthorDTO = new BookAuthorDTO();
         bookAuthorDTO.setId(book.getId());
+        bookAuthorDTO.setTitle(book.getTitle());
         bookAuthorDTO.setAuthor(book.getAuthor());
         bookAuthorDTO.setGenre(book.getGenre());
         bookAuthorDTO.setPublishingDate(book.getPublishingDate());

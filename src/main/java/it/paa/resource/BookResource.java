@@ -4,6 +4,7 @@ import it.paa.model.dto.BookDTO;
 import it.paa.model.entity.Author;
 import it.paa.model.entity.Book;
 import it.paa.model.entity.Genre;
+import it.paa.model.entity.Review;
 import it.paa.model.mapper.Mapper;
 import it.paa.roles.Roles;
 import it.paa.service.AuthorService;
@@ -15,9 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.NoContentException;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
 
 import java.util.List;
 
@@ -32,6 +31,9 @@ public class BookResource {
 
     @Inject
     AuthorService authorService;
+
+    @Context
+    SecurityContext securityContext;
 
     /*
     GET all con possibilità di filtrare per titolo e intervallo di tempo date 2 date
@@ -79,12 +81,27 @@ public class BookResource {
      */
     @GET
     @Path("/id/{id}/reviews")
-    @RolesAllowed(Roles.ADMIN)
+    @RolesAllowed({Roles.ADMIN,Roles.USER})
     public Response getReviews(@PathParam("id") Long id) {
         try {
             Book book = bookService.getById(id);
 
-            return Response.ok(book.getReviews())
+            List<Review> reviews = book.getReviews();
+
+            if(securityContext.isUserInRole(Roles.USER)){
+                String username = securityContext.getUserPrincipal().getName();
+                reviews = reviews.stream().filter(review ->
+                        review.getUser_id().getUsername().equals(username))
+                        .toList();
+
+                if(reviews.isEmpty()){
+                    return Response.status(Response.Status.NOT_FOUND)
+                            .type(MediaType.TEXT_PLAIN)
+                            .entity(username + " did not write a review for book with id " + id)
+                            .build();
+                }
+            }
+            return Response.ok(reviews)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
 
