@@ -54,7 +54,7 @@ public class ReviewResource {
     GET all con possibilità di filtrare per score e intervallo di tempo date 2 date
      */
     @GET
-    @RolesAllowed({Roles.ADMIN, Roles.USER})
+    @RolesAllowed({Roles.ADMIN, Roles.USER}) //admin può vedere tutte, user vedrà solo le sue
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
         try {
             LocalDate startDate = null;
@@ -118,7 +118,7 @@ public class ReviewResource {
 
     @GET
     @Path("/id/{id}")
-    @RolesAllowed({Roles.ADMIN})
+    @RolesAllowed({Roles.ADMIN}) //ricerca per review_id
     public Response getById(@PathParam("id") Long id) {
         try {
             Review review = reviewService.getById(id);
@@ -192,7 +192,7 @@ public class ReviewResource {
     @Path("/id/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
-    @RolesAllowed({Roles.ADMIN,Roles.USER})
+    @RolesAllowed({Roles.ADMIN,Roles.USER}) //admin può modificarle tutte, user solo le sue
     public Response update(@PathParam("id") Long id, @Valid ReviewDTO reviewDTO) {
         try {
             Review old = reviewService.getById(id);
@@ -244,7 +244,7 @@ public class ReviewResource {
     @Path("/book_id/{book_id}")
     @Consumes({MediaType.APPLICATION_JSON}) //modifica review di un utente dato il libro
     @Transactional
-    @RolesAllowed({Roles.ADMIN,Roles.USER})
+    @RolesAllowed({Roles.USER})
     public Response updateByBookId(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
         String username;
         username = securityContext.getUserPrincipal().getName();

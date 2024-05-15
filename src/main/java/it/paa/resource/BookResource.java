@@ -81,7 +81,7 @@ public class BookResource {
      */
     @GET
     @Path("/id/{id}/reviews")
-    @RolesAllowed({Roles.ADMIN,Roles.USER})
+    @RolesAllowed({Roles.ADMIN,Roles.USER}) //admin può vedere tutte, user vedrà solo le sue
     public Response getReviews(@PathParam("id") Long id) {
         try {
             Book book = bookService.getById(id);
