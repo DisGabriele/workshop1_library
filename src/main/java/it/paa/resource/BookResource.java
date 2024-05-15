@@ -9,6 +9,7 @@ import it.paa.roles.Roles;
 import it.paa.service.AuthorService;
 import it.paa.service.BookService;
 import it.paa.service.GenreService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,7 @@ public class BookResource {
     GET all con possibilità di filtrare per titolo e intervallo di tempo date 2 date
      */
     @GET
+    @PermitAll
     public Response getAll(@QueryParam("title") String title, @QueryParam("start date") Integer startDate, @QueryParam("end date") Integer endDate) {
         try {
             List<Book> books = bookService.getAll(title, startDate, endDate);
@@ -57,6 +59,7 @@ public class BookResource {
 
     @GET
     @Path("/id/{id}")
+    @PermitAll
     public Response getById(@PathParam("id") Long id) {
         try {
             Book book = bookService.getById(id);
@@ -131,9 +134,9 @@ public class BookResource {
 
     @PUT
     @Path("/id/{id}")
-    @RolesAllowed(Roles.ADMIN)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
+    @RolesAllowed(Roles.ADMIN)
     public Response update(@PathParam("id") Long id, @Valid BookDTO bookDTO) {
         try {
             Book old = bookService.getById(id);

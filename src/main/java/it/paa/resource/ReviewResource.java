@@ -118,21 +118,11 @@ public class ReviewResource {
 
     @GET
     @Path("/id/{id}")
-    @RolesAllowed({Roles.ADMIN, Roles.USER})
+    @RolesAllowed({Roles.ADMIN})
     public Response getById(@PathParam("id") Long id) {
         try {
             Review review = reviewService.getById(id);
 
-            if (securityContext.isUserInRole(Roles.USER)) {
-                String username;
-                username = securityContext.getUserPrincipal().getName();
-
-                if (!review.getUser_id().getUsername().equals(username))
-                    return Response.status(Response.Status.FORBIDDEN)
-                            .type(MediaType.TEXT_PLAIN)
-                            .entity("cannot view review written by other users")
-                            .build();
-            }
             return Response.ok(review)
                     .type(MediaType.APPLICATION_JSON)
                     .build();

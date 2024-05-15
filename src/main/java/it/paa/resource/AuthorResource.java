@@ -6,6 +6,7 @@ import it.paa.model.entity.Author;
 import it.paa.model.mapper.Mapper;
 import it.paa.roles.Roles;
 import it.paa.service.AuthorService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -73,6 +74,7 @@ public class AuthorResource {
      */
     @GET
     @Path("/id/{id}/books")
+    @PermitAll
     public Response getBooks(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
