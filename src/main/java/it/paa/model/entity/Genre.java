@@ -22,7 +22,7 @@ public class Genre {
     private String description;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "genre")
     private List<Book> books;
 
     public Genre(){}

@@ -75,8 +75,12 @@ public class AuthorService implements AuthorRepository {
     }
 
     @Override
-    public void delete(Long Id) throws NotFoundException {
+    public void delete(Long Id) throws NotFoundException, IllegalArgumentException {
         Author author = getById(Id);
+
+        if(!author.getBooks().isEmpty())
+            throw new IllegalArgumentException("cannot delete this author because it has associated books");
+
         entityManager.remove(author);
     }
 }

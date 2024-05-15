@@ -29,7 +29,7 @@ public class Author {
     private String nationality;
 
     @JsonBackReference //per non far visualizzare la lista quando si va a fare una get
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "author")
     private List<Book> books;
 
     public Author(){}

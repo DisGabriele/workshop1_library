@@ -11,5 +11,5 @@ public interface AuthorRepository {
     Author getById(Long id) throws NotFoundException;
     Author save(Author author) throws Exception;
     Author update(Author author) throws Exception;
-    void delete(Long Id) throws NotFoundException;
+    void delete(Long Id) throws NotFoundException, IllegalArgumentException;
 }

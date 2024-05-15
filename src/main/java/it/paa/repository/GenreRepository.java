@@ -11,5 +11,5 @@ public interface GenreRepository {
     Genre getById(Long id) throws NotFoundException;
     Genre save(Genre genre) throws Exception;
     Genre update(Genre genre) throws Exception;
-    void delete(Long id) throws NotFoundException;
+    void delete(Long id) throws NotFoundException, IllegalArgumentException;
 }

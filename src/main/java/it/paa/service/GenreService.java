@@ -71,8 +71,12 @@ public class GenreService implements GenreRepository {
     }
 
     @Override
-    public void delete(Long id) throws NotFoundException{
+    public void delete(Long id) throws NotFoundException, IllegalArgumentException{
         Genre genre = getById(id);
+
+        if(!genre.getBooks().isEmpty())
+            throw new IllegalArgumentException("cannot delete this author because it has associated books");
+
         entityManager.remove(genre);
     }
 

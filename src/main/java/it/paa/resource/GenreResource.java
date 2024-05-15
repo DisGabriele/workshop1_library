@@ -146,6 +146,11 @@ public class GenreResource {
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())
                     .build();
+        } catch (IllegalArgumentException e){
+            return Response.status(Response.Status.CONFLICT)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("cannot delete this role because there are users associated")
+                    .build();
         }
     }
 }
