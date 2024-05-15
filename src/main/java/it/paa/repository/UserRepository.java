@@ -11,7 +11,7 @@ import java.util.List;
 public interface UserRepository {
     List<User> getAll() throws NoContentException;
     User getById(Long id) throws NotFoundException;
-    public User getByName(String username) throws NoResultException;
+    User getByName(String username) throws NoResultException;
     User save(User user) throws PersistenceException;
     User update(User user) throws PersistenceException;
     void delete(Long id) throws NotFoundException;

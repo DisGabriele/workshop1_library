@@ -28,7 +28,7 @@ public class Mapper {
     }
 
     public static Book bookMapper(BookDTO bookDTO) {
-        Book book = new Book();;
+        Book book = new Book();
         book.setTitle(bookDTO.getTitle());
         book.setPublishingDate(bookDTO.getPublishingDate());
         book.setPageNumber(bookDTO.getPageNumber());

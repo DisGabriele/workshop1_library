@@ -26,7 +26,7 @@ public class RoleService implements RoleRepository {
         roles = entityManager.createQuery(query, Role.class).getResultList();
 
         if (roles.isEmpty())
-            throw new NotFoundException("no roles found");
+            throw new NoContentException("no roles found");
 
         return roles;
     }

@@ -136,7 +136,6 @@ public class AuthorResource {
                         .build();
 
             }
-            ;
 
             if (!author.oldEquals(old)) {
                 return Response.ok(

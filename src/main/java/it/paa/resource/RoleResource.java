@@ -9,6 +9,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class RoleResource {
             return Response.ok(roles)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
-        } catch (Exception e) {
+        } catch (NoContentException e) {
             return Response.noContent()
                     .type(MediaType.TEXT_PLAIN)
                     .entity(e.getMessage())

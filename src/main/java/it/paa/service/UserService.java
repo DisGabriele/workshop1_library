@@ -25,7 +25,7 @@ public class UserService implements UserRepository {
         List<User> users = entityManager.createQuery(query, User.class).getResultList();
 
         if (users.isEmpty())
-            throw new NotFoundException("no users found");
+            throw new NoContentException("no users found");
 
         return users;
     }
