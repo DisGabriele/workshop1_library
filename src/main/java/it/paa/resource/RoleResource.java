@@ -1,8 +1,8 @@
 package it.paa.resource;
 
 import it.paa.model.entity.Role;
+import it.paa.roles.Roles;
 import it.paa.service.RoleService;
-import it.paa.util.Roles;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;

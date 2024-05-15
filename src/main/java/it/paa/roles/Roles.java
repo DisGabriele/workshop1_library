@@ -1,4 +1,4 @@
-package it.paa.util;
+package it.paa.roles;
 
 public class Roles {
     public static final String ADMIN = "1";
