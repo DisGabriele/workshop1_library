@@ -40,6 +40,7 @@ public class BookResource {
      */
     @GET
     @PermitAll
+    @Path("/public")
     public Response getAll(@QueryParam("title") String title, @QueryParam("start date") Integer startDate, @QueryParam("end date") Integer endDate) {
         try {
             List<Book> books = bookService.getAll(title, startDate, endDate);
@@ -60,7 +61,7 @@ public class BookResource {
     }
 
     @GET
-    @Path("/id/{id}")
+    @Path("/public/book_id/{id}")
     @PermitAll
     public Response getById(@PathParam("id") Long id) {
         try {
@@ -80,7 +81,7 @@ public class BookResource {
     GET delle review di un libro
      */
     @GET
-    @Path("/id/{id}/reviews")
+    @Path("/auth/book_id/{id}/reviews")
     @RolesAllowed({Roles.ADMIN,Roles.USER}) //admin può vedere tutte, user vedrà solo le sue
     public Response getReviews(@PathParam("id") Long id) {
         try {
@@ -114,6 +115,7 @@ public class BookResource {
     }
 
     @POST
+    @Path("/admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed(Roles.ADMIN)
@@ -150,7 +152,7 @@ public class BookResource {
     }
 
     @PUT
-    @Path("/id/{id}")
+    @Path("/admin/book_id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed(Roles.ADMIN)
@@ -204,7 +206,7 @@ public class BookResource {
     }
 
     @DELETE
-    @Path("/id/{id}")
+    @Path("/admin/book_id/{id}")
     @Transactional
     @RolesAllowed(Roles.ADMIN)
     public Response delete(@PathParam("id") Long id) {

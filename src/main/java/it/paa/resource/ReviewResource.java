@@ -54,6 +54,7 @@ public class ReviewResource {
     GET all con possibilità di filtrare per score e intervallo di tempo date 2 date
      */
     @GET
+    @Path("/auth")
     @RolesAllowed({Roles.ADMIN, Roles.USER}) //admin può vedere tutte, user vedrà solo le sue
     public Response getAll(@QueryParam("score") Integer score, @QueryParam("start date") String startDateString, @QueryParam("end date") String endDateString) {
         try {
@@ -117,7 +118,7 @@ public class ReviewResource {
     }
 
     @GET
-    @Path("/id/{id}")
+    @Path("/admin/review_id/{id}")
     @RolesAllowed({Roles.ADMIN}) //ricerca per review_id
     public Response getById(@PathParam("id") Long id) {
         try {
@@ -138,7 +139,7 @@ public class ReviewResource {
     POST di una review dato un libro
      */
     @POST
-    @Path("/book_id/{book_id}")
+    @Path("/user/book_id/{book_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed(Roles.USER)
@@ -189,7 +190,7 @@ public class ReviewResource {
     }
 
     @PUT
-    @Path("/id/{id}")
+    @Path("/auth/review_id/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Transactional
     @RolesAllowed({Roles.ADMIN,Roles.USER}) //admin può modificarle tutte, user solo le sue
@@ -241,7 +242,7 @@ public class ReviewResource {
     }
 
     @PUT
-    @Path("/book_id/{book_id}")
+    @Path("/user/book_id/{book_id}")
     @Consumes({MediaType.APPLICATION_JSON}) //modifica review di un utente dato il libro
     @Transactional
     @RolesAllowed({Roles.USER})
@@ -290,7 +291,7 @@ public class ReviewResource {
     }
 
     @DELETE
-    @Path("/id/{id}")
+    @Path("/auth/review_id/{id}")
     @Transactional
     @RolesAllowed({Roles.ADMIN, Roles.USER})
     //lo lascio a tutti visto che un admin può rimuovere una recensione (come se fosse un moderatore)
@@ -321,7 +322,7 @@ public class ReviewResource {
     }
 
     @DELETE
-    @Path("/book_id/{book_id}")
+    @Path("/auth/book_id/{book_id}")
     @Transactional
     @RolesAllowed(Roles.USER) //eliminare recensione dell'utente dato l'id di un libro (solo user esistono piu' recensioni per un libro)
     public Response deleteByBookId(@PathParam("book_id") Long bookId) {

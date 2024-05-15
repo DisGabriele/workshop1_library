@@ -21,7 +21,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Set;
 
-@Path("/authors")
+@Path("/admin/authors")
 @RolesAllowed(Roles.ADMIN)
 public class AuthorResource {
 
@@ -53,7 +53,7 @@ public class AuthorResource {
     }
 
     @GET
-    @Path("/id/{id}")
+    @Path("/author_id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
@@ -72,7 +72,7 @@ public class AuthorResource {
     GET della lista di libri associati ad un autore
      */
     @GET
-    @Path("/id/{id}/books")
+    @Path("/author_id/{id}/books")
     public Response getBooks(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
@@ -116,7 +116,7 @@ public class AuthorResource {
     }
 
     @PUT
-    @Path("/id/{id}")
+    @Path("/author_id/{id}")
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid AuthorDTO authorDTO) {
         try {
@@ -156,7 +156,7 @@ public class AuthorResource {
     }
 
     @DELETE
-    @Path("/id/{id}")
+    @Path("/author_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {

@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/genres")
+@Path("/admin/genres")
 @RolesAllowed(Roles.ADMIN)
 public class GenreResource {
 
@@ -44,7 +44,7 @@ public class GenreResource {
     }
 
     @GET
-    @Path("/id/{id}")
+    @Path("/genre_id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
             Genre genre = genreService.getById(id);
@@ -104,7 +104,7 @@ public class GenreResource {
     }
 
     @PUT
-    @Path("/id/{id}")
+    @Path("/genre_id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid GenreDTO genreDTO) {
@@ -133,7 +133,7 @@ public class GenreResource {
     }
 
     @DELETE
-    @Path("/id/{id}")
+    @Path("/genre_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {
