@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/admin/genres")
+@Path("/genres")
 @RolesAllowed(Roles.ADMIN)
 public class GenreResource {
 
@@ -29,6 +29,7 @@ public class GenreResource {
     GET all con possibilità di filtrare per name e description
      */
     @GET
+    @Path("/admin")
     public Response getAll(@QueryParam("name") String name, @QueryParam("description") String description) {
         try {
             List<Genre> genres = genreService.getAll(name, description);
@@ -44,7 +45,7 @@ public class GenreResource {
     }
 
     @GET
-    @Path("/genre_id/{id}")
+    @Path("/admin/genre_id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
             Genre genre = genreService.getById(id);
@@ -63,7 +64,7 @@ public class GenreResource {
     GET dell'average reting delle review dei libri associati a questo genere
      */
     @GET
-    @Path("/average_rating")
+    @Path("/admin/average_rating")
     public Response getAverageRatingById() {
         try {
             List<GenreReviewDTO> genreReviewDTOList = new ArrayList<>();
@@ -92,6 +93,7 @@ public class GenreResource {
     }
 
     @POST
+    @Path("/admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(@Valid GenreDTO genreDTO) {
@@ -104,7 +106,7 @@ public class GenreResource {
     }
 
     @PUT
-    @Path("/genre_id/{id}")
+    @Path("/admin/genre_id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid GenreDTO genreDTO) {
@@ -133,7 +135,7 @@ public class GenreResource {
     }
 
     @DELETE
-    @Path("/genre_id/{id}")
+    @Path("/admin/genre_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {

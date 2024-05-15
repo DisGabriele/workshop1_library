@@ -344,6 +344,5 @@ public class ReviewResource {
                         .type(MediaType.TEXT_PLAIN)
                         .entity(username + " did not write a review for book with id " + bookId)
                         .build();
-
     }
 }

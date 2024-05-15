@@ -21,7 +21,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Set;
 
-@Path("/admin/authors")
+@Path("/authors")
 @RolesAllowed(Roles.ADMIN)
 public class AuthorResource {
 
@@ -38,6 +38,7 @@ public class AuthorResource {
     GET all con possibilità di filtrare per name e surname
      */
     @GET
+    @Path("/admin")
     public Response getAll(@QueryParam("name") String name, @QueryParam("surname") String surname) {
         try {
             List<Author> authors = authorService.getAll(name, surname);
@@ -53,7 +54,7 @@ public class AuthorResource {
     }
 
     @GET
-    @Path("/author_id/{id}")
+    @Path("/admin/author_id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
@@ -72,7 +73,7 @@ public class AuthorResource {
     GET della lista di libri associati ad un autore
      */
     @GET
-    @Path("/author_id/{id}/books")
+    @Path("/admin/author_id/{id}/books")
     public Response getBooks(@PathParam("id") Long id) {
         try {
             Author author = authorService.getById(id);
@@ -94,6 +95,7 @@ public class AuthorResource {
     }
 
     @POST
+    @Path("/admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(@Valid AuthorDTO authorDTO) {
@@ -116,7 +118,7 @@ public class AuthorResource {
     }
 
     @PUT
-    @Path("/author_id/{id}")
+    @Path("/admin/author_id/{id}")
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid AuthorDTO authorDTO) {
         try {
@@ -156,7 +158,7 @@ public class AuthorResource {
     }
 
     @DELETE
-    @Path("/author_id/{id}")
+    @Path("/admin/author_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {

@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("/admin/roles")
+@Path("/roles")
 @RolesAllowed(Roles.ADMIN)
 public class RoleResource {
 
@@ -22,6 +22,7 @@ public class RoleResource {
     RoleService roleService;
 
     @GET
+    @Path("/admin")
     public Response getAll() {
         try {
             List<Role> roles = roleService.getAll();
@@ -37,7 +38,7 @@ public class RoleResource {
     }
 
     @GET
-    @Path("/role_id/{id}")
+    @Path("/admin/role_id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
             Role role = roleService.getById(id);
@@ -53,7 +54,7 @@ public class RoleResource {
     }
 
     @GET
-    @Path("/name/{name}")
+    @Path("/admin/name/{name}")
     public Response getByName(@PathParam("name") String name) {
         try {
             Role role = roleService.getByName(name);
@@ -69,6 +70,7 @@ public class RoleResource {
     }
 
     @POST
+    @Path("/admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(@QueryParam("role name") String roleName) {
@@ -94,7 +96,7 @@ public class RoleResource {
     }
 
     @PUT
-    @Path("/role_id/{id}")
+    @Path("/admin/role_id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @QueryParam("role name") String roleName) {
@@ -137,7 +139,7 @@ public class RoleResource {
     }
 
     @DELETE
-    @Path("/role_id/{id}")
+    @Path("/admin/role_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {

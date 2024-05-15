@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("/admin/users")
+@Path("/users")
 @RolesAllowed(Roles.ADMIN)
 public class UserResource {
 
@@ -31,6 +31,7 @@ public class UserResource {
     RoleService roleService;
 
     @GET
+    @Path("/admin")
     public Response getAll() {
         try {
             List<User> users = userService.getAll();
@@ -47,7 +48,7 @@ public class UserResource {
 
 
     @GET
-    @Path("/user_id/{id}")
+    @Path("/admin/user_id/{id}")
     public Response getById(@PathParam("id") Long id) {
         try {
             User user = userService.getById(id);
@@ -64,6 +65,7 @@ public class UserResource {
     }
 
     @POST
+    @Path("/admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response create(@Valid UserDTO userDTO) {
@@ -94,7 +96,7 @@ public class UserResource {
     }
 
     @PUT
-    @Path("/user_id/{id}")
+    @Path("/admin/user_id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid UserDTO userDTO) {
@@ -145,7 +147,7 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("/user_id/{id}")
+    @Path("/admin/user_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {
