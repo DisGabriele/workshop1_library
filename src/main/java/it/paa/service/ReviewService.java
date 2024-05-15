@@ -81,9 +81,9 @@ public class ReviewService implements ReviewRepository {
         return review;
     }
 
-    public Review getByBookTitleAndUser(String title, String username) throws NoResultException {
-        return entityManager.createQuery("SELECT r FROM Review r WHERE LOWER(r.book.title) = LOWER(:title) AND r.user_id.username = :username", Review.class)
-                .setParameter("title", title)
+    public Review getByBookIdAndUser(Long id, String username) throws NoResultException {
+        return entityManager.createQuery("SELECT r FROM Review r WHERE r.id = :id AND r.user_id.username = :username", Review.class)
+                .setParameter("id", id)
                 .setParameter("username", username)
                 .getSingleResult();
     }

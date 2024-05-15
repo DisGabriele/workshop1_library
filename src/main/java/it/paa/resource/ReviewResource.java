@@ -163,7 +163,6 @@ public class ReviewResource {
                     .build();
         }
 
-
         Book book;
         try {
             book = bookService.getById(bookId);
@@ -182,65 +181,7 @@ public class ReviewResource {
 
         if (!validations.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(validations.stream().map(violation -> violation.getPropertyPath()
-                            + ": "
-                            + violation.getMessage()
-                    ))
-                    .build();
-        }
-
-        try {
-            return Response.status(Response.Status.CREATED)
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(reviewService.save(review))
-                    .build();
-        } catch (PersistenceException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(e.getMessage())
-                    .build();
-        }
-    }
-
-    @POST
-    @Path("/book_title/{title}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    @RolesAllowed(Roles.USER)
-    public Response createFromTitle(@PathParam("title") String title, @Valid ReviewDTO reviewDTO) {
-        User user;
-        try {
-            user = userService.getByName(securityContext.getUserPrincipal().getName());
-        } catch (NoResultException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity(e.getMessage())
-                    .build();
-        }
-
-
-        Book book;
-        try {
-            book = bookService.getByTitle(title);
-        } catch (NoResultException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity("book with title " + title + " not found")
-                    .build();
-        }
-
-        Review review = Mapper.reviewMapper(reviewDTO);
-        review.setBook(book);
-        review.setUser_id(user);
-
-        Set<ConstraintViolation<Review>> validations = validator.validate(review);
-
-        if (!validations.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(validations.stream().map(violation -> violation.getPropertyPath()
-                            + ": "
-                            + violation.getMessage()
-                    ))
+                    .entity(validations)
                     .build();
         }
 
@@ -284,10 +225,7 @@ public class ReviewResource {
 
             if (!validations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(validations.stream().map(violation -> violation.getPropertyPath()
-                                + ": "
-                                + violation.getMessage()
-                        ))
+                        .entity(validations)
                         .build();
             }
 
@@ -310,16 +248,16 @@ public class ReviewResource {
     }
 
     @PUT
-    @Path("/book_title/{title}")
+    @Path("/book_id/{book_id}")
     @Consumes({MediaType.APPLICATION_JSON}) //modifica review di un utente dato il libro
     @Transactional
     @RolesAllowed(Roles.USER)
-    public Response updateByTitle(@PathParam("title") String title, @Valid ReviewDTO reviewDTO) {
+    public Response updateByBookId(@PathParam("book_id") Long bookId, @Valid ReviewDTO reviewDTO) {
         String username;
         username = securityContext.getUserPrincipal().getName();
 
         try {
-            Review old = reviewService.getByBookTitleAndUser(title, username);
+            Review old = reviewService.getByBookIdAndUser(bookId, username);
 
             if (!old.getUser_id().getUsername().equals(username))
                 return Response.status(Response.Status.FORBIDDEN)
@@ -336,10 +274,7 @@ public class ReviewResource {
 
             if (!validations.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(validations.stream().map(violation -> violation.getPropertyPath()
-                                + ": "
-                                + violation.getMessage()
-                        ))
+                        .entity(validations)
                         .build();
             }
 
@@ -356,7 +291,7 @@ public class ReviewResource {
         } catch (NoResultException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .type(MediaType.TEXT_PLAIN)
-                    .entity(username + " did not written a review for book with title " + title)
+                    .entity(username + " did not written a review for book with id " + bookId)
                     .build();
         }
     }
@@ -393,16 +328,16 @@ public class ReviewResource {
     }
 
     @DELETE
-    @Path("/book_title/{title}")
+    @Path("/book_id/{book_id}")
     @Transactional
-    @RolesAllowed({Roles.USER}) //eliminare recensione dell'utente dato il titolo di un libro
-    public Response deleteByBook(@PathParam("title") String title) {
+    @RolesAllowed({Roles.USER}) //eliminare recensione dell'utente dato l'id di un libro
+    public Response deleteByBookId(@PathParam("book_id") Long bookId) {
             String username;
             username = securityContext.getUserPrincipal().getName();
 
             User user = userService.getByName(username);
 
-            Review review = user.getReviews().stream().filter(review1 -> review1.getBook().getTitle().equals(title))
+            Review review = user.getReviews().stream().filter(review1 -> review1.getBook().getId().equals(bookId))
                     .findFirst().orElse(null);
 
             if(review != null){
@@ -413,7 +348,7 @@ public class ReviewResource {
             else
                 return Response.status(Response.Status.NOT_FOUND)
                         .type(MediaType.TEXT_PLAIN)
-                        .entity(username + " did not write a review for book with tile " + title)
+                        .entity(username + " did not write a review for book with id " + bookId)
                         .build();
 
     }

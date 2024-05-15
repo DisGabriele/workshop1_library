@@ -4,7 +4,6 @@ import it.paa.model.entity.Book;
 import it.paa.repository.BookRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.NotFoundException;
@@ -71,24 +70,14 @@ public class BookService implements BookRepository {
 
     @Override
     public Book save(Book book) throws PersistenceException {
-        try{
         entityManager.persist(book);
-        entityManager.flush();
         return book;
-        } catch (PersistenceException e){
-            throw new PersistenceException("book with this title already exists");
-        }
     }
 
     @Override
     public Book update(Book book) {
-        try{
             entityManager.persist(book);
-            entityManager.flush();
             return book;
-        } catch (PersistenceException e){
-            throw new PersistenceException("book with this title already exists");
-        }
     }
 
     @Override
@@ -97,10 +86,4 @@ public class BookService implements BookRepository {
         entityManager.remove(book);
     }
 
-    @Override
-    public Book getByTitle(String title) throws NoResultException {
-        return entityManager.createQuery("SELECT b FROM Book b WHERE LOWER(b.title) = LOWER(:title)",Book.class)
-                .setParameter("title",title)
-                .getSingleResult();
-    }
 }
