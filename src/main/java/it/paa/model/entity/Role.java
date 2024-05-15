@@ -16,7 +16,7 @@ public class Role {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "role")
     @JsonBackReference
     private List<User> users;
 

@@ -79,8 +79,12 @@ public class RoleService implements RoleRepository {
     }
 
     @Override
-    public void delete(Long id) throws NotFoundException {
+    public void delete(Long id) throws NotFoundException, IllegalArgumentException {
         Role role = getById(id);
+
+        if(!role.getUsers().isEmpty())
+            throw new IllegalArgumentException("cannot delete this role because there are users associated");
+
         entityManager.remove(role);
     }
 }

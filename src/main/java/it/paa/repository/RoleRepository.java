@@ -12,5 +12,5 @@ public interface RoleRepository {
     Role getById(Long id) throws NotFoundException;
     Role save(Role role) throws PersistenceException;
     Role update(Role role) throws PersistenceException;
-    void delete(Long id) throws NotFoundException;
+    void delete(Long id) throws NotFoundException, IllegalArgumentException;
 }
