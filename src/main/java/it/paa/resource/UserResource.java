@@ -101,6 +101,23 @@ public class UserResource {
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid UserDTO userDTO) {
         try {
+            try {
+                List<User> filteredUsers = userService.getAll().stream().filter(user -> user.getUsername().equalsIgnoreCase(userDTO.getUsername()))
+                        .toList();
+
+                if (!filteredUsers.isEmpty()) {
+                    return Response.status(Response.Status.CONFLICT)
+                            .type(MediaType.TEXT_PLAIN)
+                            .entity("user with this username already exists")
+                            .build();
+                }
+            } catch (NoContentException e) {
+                return Response.noContent()
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("no users found")
+                        .build();
+            }
+
             User old = userService.getById(id);
 
             Role role;
@@ -119,9 +136,11 @@ public class UserResource {
             user.setReviews(old.getReviews());
 
             try {
-                if (!(user.getUsername().equals(old.getUsername())) &&
-                        BcryptUtil.matches(userDTO.getPassword(), old.getPassword()) &&
-                        user.getRole().equals(old.getRole())
+                if (!(
+                        (user.getUsername().equals(old.getUsername())) &&
+                                BcryptUtil.matches(userDTO.getPassword(), old.getPassword()) &&
+                                user.getRole().equals(old.getRole())
+                )
                 ) {
                     return Response.ok(
                             userService.update(user)

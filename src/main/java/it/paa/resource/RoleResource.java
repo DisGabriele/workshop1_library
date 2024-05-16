@@ -107,6 +107,24 @@ public class RoleResource {
                         .entity("role cannot be empty")
                         .build();
             }
+
+            try {
+                List<Role> filteredRoles = roleService.getAll().stream().filter(role -> role.getName().equalsIgnoreCase(roleName))
+                        .toList();
+
+                if (!filteredRoles.isEmpty()) {
+                    return Response.status(Response.Status.CONFLICT)
+                            .type(MediaType.TEXT_PLAIN)
+                            .entity("role with this name already exists")
+                            .build();
+                }
+            } catch (NoContentException e) {
+                return Response.noContent()
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("no roles found")
+                        .build();
+            }
+
             Role old = roleService.getById(id);
             Role role = new Role();
             role.setId(id);

@@ -144,6 +144,13 @@ public class BookResource {
         book.setAuthor(author);
         book.setGenre(genre);
 
+        if(book.getAuthor().getBirthDate().getYear() > book.getPublishingDate() ){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("publishing date is before authors' birth date")
+                    .build();
+        }
+
         return Response.status(Response.Status.CREATED)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(bookService.save(book))
@@ -185,6 +192,13 @@ public class BookResource {
 
             book.setAuthor(author);
             book.setGenre(genre);
+
+            if(book.getAuthor().getBirthDate().getYear() > book.getPublishingDate() ){
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("publishing date is before authors' birth date")
+                        .build();
+            }
 
             if (!book.oldEquals(old)) {
                 return Response.ok(
