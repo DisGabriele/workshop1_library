@@ -167,7 +167,7 @@ public class BookResource {
         try {
             Book old = bookService.getById(id);
             Book book = Mapper.bookMapper(bookDTO);
-            book.setId(old.getId());
+            book.setId(id);
             book.setReviews(old.getReviews());
 
             Author author;

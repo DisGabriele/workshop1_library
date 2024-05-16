@@ -76,7 +76,7 @@ public class BookService implements BookRepository {
 
     @Override
     public Book update(Book book) {
-            entityManager.persist(book);
+            entityManager.merge(book);
             return book;
     }
 

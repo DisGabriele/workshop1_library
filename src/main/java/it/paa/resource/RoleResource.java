@@ -109,7 +109,7 @@ public class RoleResource {
             }
 
             try {
-                List<Role> filteredRoles = roleService.getAll().stream().filter(role -> role.getName().equalsIgnoreCase(roleName))
+                List<Role> filteredRoles = roleService.getAll().stream().filter(role -> role.getName().equalsIgnoreCase(roleName) && !role.getId().equals(id))
                         .toList();
 
                 if (!filteredRoles.isEmpty()) {
