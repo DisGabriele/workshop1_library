@@ -108,6 +108,7 @@ public class RoleResource {
                         .build();
             }
 
+            //messo il controllo manuale per l'univocità del nome perchè con la PUT non mi controllava con l'ignore case, mentre nella POST si
             try {
                 List<Role> filteredRoles = roleService.getAll().stream().filter(role -> role.getName().equalsIgnoreCase(roleName) && !role.getId().equals(id))
                         .toList();

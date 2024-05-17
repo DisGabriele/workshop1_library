@@ -55,6 +55,7 @@ public class ReviewService implements ReviewRepository {
                     .getResultList();
         }
 
+        //se username non è null, allora è entrato un user, quindi filtra per le sue review
         if(username != null && !username.isEmpty() && !username.isBlank()){
             User user = entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username",User.class)
                     .setParameter("username", username)

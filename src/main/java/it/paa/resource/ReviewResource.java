@@ -96,6 +96,7 @@ public class ReviewResource {
                     }
                 }
             }
+            //passo l'username per distinguere la chiamata fatta dall'admin da quella fatta dall'user (admin vede tutte le review, user solo le sue)
             String username = "";
             if (securityContext.isUserInRole(Roles.USER))
                 username = securityContext.getUserPrincipal().getName();

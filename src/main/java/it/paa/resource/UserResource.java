@@ -101,6 +101,8 @@ public class UserResource {
     @Transactional
     public Response update(@PathParam("id") Long id, @Valid UserDTO userDTO) {
         try {
+
+            //messo il controllo manuale per l'univocità del nome perchè con la PUT non mi controllava con l'ignore case, mentre nella POST si
             try {
                 List<User> filteredUsers = userService.getAll().stream().filter(user -> user.getUsername().equalsIgnoreCase(userDTO.getUsername()))
                         .toList();
