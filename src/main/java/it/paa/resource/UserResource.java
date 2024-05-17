@@ -170,6 +170,13 @@ public class UserResource {
     @Transactional
     public Response delete(@PathParam("id") Long id) {
         try {
+            if(id == 1){
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity("cannot delete the main admin")
+                        .build();
+            }
+
             userService.delete(id);
 
             return Response.ok()

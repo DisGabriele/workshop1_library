@@ -160,6 +160,22 @@ public class RoleResource {
     @Path("/admin/role_id/{id}")
     @Transactional
     public Response delete(@PathParam("id") Long id) {
+        if(id == 1){
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("cannot delete the admin role")
+                    .build();
+        }
+
+        if(id == 2){
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("cannot delete the user role")
+                    .build();
+        }
+
+
+
         try {
             roleService.delete(id);
             return Response.ok().build();
