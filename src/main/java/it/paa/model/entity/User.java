@@ -1,8 +1,8 @@
 package it.paa.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class User {
     private String username;
 
     @Column(name = "password", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ManyToOne
